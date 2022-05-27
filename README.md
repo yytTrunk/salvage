@@ -54,3 +54,17 @@ All rights reserved。
 ThinkPHP® 商标和著作权所有者为上海顶想信息科技有限公司。
 
 更多细节参阅 [LICENSE.txt](LICENSE.txt)
+
+
+
+## 启动
+thinkphp6.0框架
+采用workman监听服务
+监听命令 999端口998端口
+999端口监听硬件
+998端口监听摄像头（未实现）
+cd 到项目public
+php think worker:server -d 守护进程启动
+php think worker:server start 普通启动
+php think worker:server status 查看状态
+php think worker:server stop 停止监听
