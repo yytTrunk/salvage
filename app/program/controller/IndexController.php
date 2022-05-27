@@ -110,21 +110,21 @@ class IndexController extends BaseController
 
         $user = User::where('user_name','=',$tel)->where(['status' => 1])->find();
         if (!$user) {
-            return $this->jsonFail('登录失败');
+            return $this->jsonFail('用户名错误');
         }
 
         if (md5($password) !== $user->password) {
-            return $this->jsonFail('登录失败');
+            return $this->jsonFail('密码错误');
         }
 
         $openId = $this->getOpenid($code);
         if (!$openId) {
-            return $this->jsonFail('登录失败');
+            return $this->jsonFail('openId获取失败');
         }
 
         $user->openid = $openId;
         if (!$user->save()) {
-            return $this->jsonFail('登录失败');
+            return $this->jsonFail('openId失败');
         }
 
         return $this->jsonSuccess('登录成功',['user' => $user]);
