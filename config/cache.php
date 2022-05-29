@@ -23,6 +23,7 @@ return [
             'tag_prefix' => 'tag:',
             // 序列化机制 例如 ['serialize', 'unserialize']
             'serialize'  => [],
+            'permission' => 0664,
         ],
         // 更多的缓存连接
     ],
