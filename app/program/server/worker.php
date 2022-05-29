@@ -62,6 +62,7 @@ class worker extends Server
     }
 
     public function onMessage($connection ,$data) {
+        // dayin
         var_dump($data);
         //警报记录
         if ($data['Radar1_Warm'] == 1 || $data['Radar2_Warm'] == 1 || $data['Radar3_Warm'] == 1 || $data['Radar4_Warm'] == 1) {
@@ -80,6 +81,7 @@ class worker extends Server
                         $len = strlen($data['Longitude']);
                         $s = substr($data['Longitude'],0,$len-3);
                         $l = substr($data['Longitude'],-1,1);
+                        // cunchu
                         $model = new Alarm();
                         $model->name = '警报';
                         $model->BID = $data['ID'];
@@ -101,6 +103,7 @@ class worker extends Server
 
                                 if ($user->tel) {
                                     $server->sms($user->tel,$address);
+                                    $server->sendSMS($user->tel, $address);
                                 }
 
                             }

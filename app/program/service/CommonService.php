@@ -92,6 +92,11 @@ class CommonService
         return $this->send_post($url,$data);
     }
 
+    public function sendSMS($tel = '', $message=''){
+        $url = 'https://106.ihuyi.com/webservice/sms.php?method=Submit&account=C38501347&password=8ca63faea43eb88621b9f4b800e87894&mobile='.$tel.'content=新预警通知！报警地址:'.$message.'，请您登陆小程序查看！';
+
+        return $this->curl_https($url);
+    }
 
     /**
      * @param string $tel
