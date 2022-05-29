@@ -102,7 +102,7 @@ class worker extends Server
                                 }
 
                                 if ($user->tel) {
-                                    $server->sms($user->tel,$address);
+                                    // $server->sms($user->tel,$address);
                                     $server->sendSMS($user->tel, $address);
                                 }
 
