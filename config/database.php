@@ -26,11 +26,11 @@ return [
             // 服务器地址
             'hostname'        => env('database.hostname', '127.0.0.1'),
             // 数据库名
-            'database'        => env('database.database', 'salvage_top'),
+            'database'        => env('database.database', 'stgui_com'),
             // 用户名
-            'username'        => env('database.username', 'salvage_top'),
+            'username'        => env('database.username', 'stgui_com'),
             // 密码
-            'password'        => env('database.password', 'ZrTmPNXkEyjCBRNs'),
+            'password'        => env('database.password', 'LZ8enKTM5xFAPikM'),
             // 端口
             'hostport'        => env('database.hostport', '3306'),
             // 数据库连接参数
