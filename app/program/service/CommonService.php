@@ -6,6 +6,7 @@ namespace app\program\service;
 use AlibabaCloud\Client\AlibabaCloud;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
+use think\App;
 
 
 class CommonService
@@ -147,7 +148,8 @@ class CommonService
     }
 
     public function writeWorkmanLog($contents) {
-        $DIR_ROOT = "/tmp/workman/log/";
-        file_put_contents($DIR_ROOT.date('Ymd').'txt' , $contents."\n" , FILE_APPEND | LOCK_EX );
+        $path = app()->getRuntimePath()."workman/log/".date('Y-m-d').".txt";
+        //  FILE_APPEND | LOCK_EX 独占锁
+        file_put_contents($path, "【" . date('Y-m-d H:i:s')."】 ".$contents."\r\n" , FILE_APPEND);
     }
 }

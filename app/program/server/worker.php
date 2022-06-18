@@ -69,7 +69,6 @@ class worker extends Server
     public function onError($connection, $code, $msg) {
         $ip = $connection->getRemoteIP();
         $contents = "连接 $ip error [ $code ] $msg\n";
-        
         $commonService = new CommonService();
         $commonService->writeWorkmanLog($contents);
     }
