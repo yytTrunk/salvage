@@ -148,7 +148,7 @@ class CommonService
     }
 
     public function writeWorkmanLog($contents) {
-        $path = app()->getRuntimePath()."workman/log/".date('Y-m-d').".txt";
+        $path = app()->getRuntimePath()."myworkman/log/".date('Y-m-d').".txt";
         //  FILE_APPEND | LOCK_EX 独占锁
         file_put_contents($path, "【" . date('Y-m-d H:i:s')."】 ".$contents."\r\n" , FILE_APPEND);
     }

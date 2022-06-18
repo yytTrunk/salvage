@@ -59,8 +59,6 @@ ThinkPHP® 商标和著作权所有者为上海顶想信息科技有限公司。
 
 
 ## 启动
-
-### 日志
 thinkphp6.0框架
 采用workman监听服务
 监听命令 999端口998端口
@@ -73,3 +71,6 @@ php think worker:server status 查看状态
 php think worker:server stop 停止监听
 
 php think stop 关闭守护进程
+
+### 日志
+创建目录下 /runtime/myworkman/log  记录业务workman日志
