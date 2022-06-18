@@ -56,6 +56,7 @@ abstract class Server
 
     protected function init()
     {
+        Worker::$stdoutFile = '/tmp/workmanlog/';
     }
 
     public function start()
