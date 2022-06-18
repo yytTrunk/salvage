@@ -50,19 +50,25 @@ class worker extends Server
     }
 
     public function onConnect($connection) {
+        $ip = $connection->getRemoteIP();
+        echo "建立连接 remoteIp = $ip \n";
+
+        // $res = bin2hex("ALARM");
+        // $connection->send($res);
     }
 
     public function onClose($connection) {
-
+        $ip = $connection->getRemoteIP();
+        echo "断开连接 remoteIp = $ip \n";
     }
 
-
     public function onError($connection, $code, $msg) {
-        echo "error [ $code ] $msg\n";
+        $ip = $connection->getRemoteIP();
+        echo "连接 $ip error [ $code ] $msg\n";
     }
 
     public function onMessage($connection ,$data) {
-        // dayin
+        // 打印
         var_dump($data);
         //警报记录
         if ($data['Radar1_Warm'] == 1 || $data['Radar2_Warm'] == 1 || $data['Radar3_Warm'] == 1 || $data['Radar4_Warm'] == 1) {
@@ -92,18 +98,18 @@ class worker extends Server
                         $model->save();
                         if (!$data['Longitude'] || !$data['Latitude'] || !$model->longitude || !$model->latitude) {
                             $model->delete();
-                        }else{
-                            //管理员与值班室发送数据
-                            $users = User::where('role','in',User::ROLE_40.','.User::ROLE_10)->where(['status' => 1])->select();
+                        } else {
+                            // 向管理员与值班室发送数据
+                            $users = User::where('role', 'in', User::ROLE_40.','.User::ROLE_10)->where(['status' => 1])->select();
                             foreach ($users as $user) {
-
+                                // 发送小程序弹窗告警
                                 if ($user->openid) {
-                                    $server->sendMessageToUser($user->openid,'警报',$address);
+                                    $server->sendMessageToUser($user->openid, '警报', $address);
                                 }
-
+                                // 发送短信        
                                 if ($user->tel) {
                                     // $server->sms($user->tel,$address);
-                                    $server->sendSMS($user->tel, $address);
+                                    $smsResp = $server->sendSMS($user->tel, $address);
                                 }
 
                             }
@@ -113,7 +119,8 @@ class worker extends Server
 //            }
         }
 
-        $res = substr($data['data'],3,8);
+        // 返回数据
+        $res = substr($data['data'], 3, 8);
         $res .= dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01);
         $connection->send($res);
     }

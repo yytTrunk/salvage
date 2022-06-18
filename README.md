@@ -68,3 +68,5 @@ php think worker:server -d 守护进程启动
 php think worker:server start 普通启动
 php think worker:server status 查看状态
 php think worker:server stop 停止监听
+
+php think stop 关闭守护进程

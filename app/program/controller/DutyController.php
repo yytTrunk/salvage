@@ -194,7 +194,7 @@ class DutyController extends BaseController
             }
 
             if ($user->tel) {
-                $server->sms($user->tel,$address);
+                $server->sendSMS($user->tel,$address);
             }
 
         }
