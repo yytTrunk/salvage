@@ -145,4 +145,9 @@ class CommonService
 
         }
     }
+
+    public function writeWorkmanLog($contents) {
+        $DIR_ROOT = "/tmp/workman/log/";
+        file_put_contents($DIR_ROOT.date('Ymd').'txt' , $contents."\n" , FILE_APPEND | LOCK_EX );
+    }
 }

@@ -51,7 +51,9 @@ class worker extends Server
 
     public function onConnect($connection) {
         $ip = $connection->getRemoteIP();
-        echo "建立连接 remoteIp = $ip \n";
+        $contents = "建立连接 remoteIp = $ip \n";
+        $commonService = new CommonService();
+        $commonService->writeWorkmanLog($contents);
 
         // $res = bin2hex("ALARM");
         // $connection->send($res);
@@ -59,12 +61,17 @@ class worker extends Server
 
     public function onClose($connection) {
         $ip = $connection->getRemoteIP();
-        echo "断开连接 remoteIp = $ip \n";
+        $contents = "断开连接 remoteIp = $ip \n";
+        $commonService = new CommonService();
+        $commonService->writeWorkmanLog($contents);
     }
 
     public function onError($connection, $code, $msg) {
         $ip = $connection->getRemoteIP();
-        echo "连接 $ip error [ $code ] $msg\n";
+        $contents = "连接 $ip error [ $code ] $msg\n";
+        
+        $commonService = new CommonService();
+        $commonService->writeWorkmanLog($contents);
     }
 
     public function onMessage($connection ,$data) {
