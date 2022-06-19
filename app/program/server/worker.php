@@ -96,7 +96,7 @@ class worker extends Server
         if ($ID == "579110025") {
             // 读取缓存
             if (\think\facade\Cache::has('alarm')) {
-                $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).bin2hex("ALARM");
+                $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("ALARM");
 
                 $server->writeWorkmanLog("触发一次远程报警器");
                 $connection->send($msgAlarm);
