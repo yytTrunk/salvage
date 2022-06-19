@@ -17,7 +17,7 @@ class CommonService
     /**
      * curl请求
      */
-    protected function curl_https($url =''){
+    protected function curl_https($url ='') {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);

@@ -10,11 +10,21 @@ class JsonNL
         $data = $recv_buffer;
         $len = strlen($data);
         for ($i=0; $i<$len; $i++) {
-            echo sprintf("%s", sprintf("%02x", ord($data[$i])));
             // 转化为16进制
             $dump[] = sprintf("%s", sprintf("%02x", ord($data[$i])));
         }
-        echo "/r/n";
+
+        // 如果id为 579110025， 为报警器设备，直接放行 
+        // echo $dump[4];
+        // echo $dump[5];
+        // echo $dump[6];
+        // echo $dump[7];
+
+        // if ($len >= 8 && $dump[4]=="35" && $dump[5]="36" && $dump[6]="37" && $dump[7]="38") {
+        //     echo "222";
+        //     // return $len;
+        // }
+        // echo "333";
 
         // 比较消息长度是否合法
         $msg_len = hexdec($dump[0]);
@@ -46,6 +56,7 @@ class JsonNL
         for ($i = 4;$i<8;$i++) {
             $ID .= hexdec($dump[$i]);
         }
+        echo $ID;
 
         $res = '';
         $gps_state = hexdec($dump[34]);

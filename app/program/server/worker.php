@@ -83,12 +83,26 @@ class worker extends Server
         // 打印
         var_dump($data);
 
+        $server = new CommonService();
+        // 16 进制 395b6419， 字符串为 579110025
+        $ID = $data['ID'];
+        if ($ID == "579110025") {
+            // 读取缓存
+            if (\think\facade\Cache::has('alarm')) {
+                $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).bin2hex("ALARM");
+
+                $server->writeWorkmanLog("触发一次远程报警器");
+                $connection->send($msgAlarm);
+                \think\facade\Cache::delete('alarm');
+                return;
+            }
+        }
+
         //警报记录
         if ($data['Radar1_Warm'] == 1 || $data['Radar2_Warm'] == 1 || $data['Radar3_Warm'] == 1 || $data['Radar4_Warm'] == 1) {
             //检测经纬度是否为有效数据
 //            if (strpos($data['Longitude'],'E') || strpos($data['Longitude'],'W')) {
 //                if (strpos($data['Latitude'],'S') || strpos($data['Latitude'],'N')) {
-                    $server = new CommonService();
                     $longitude = substr($data['Longitude'],0,5);
                     $longitudeE = substr($data['Longitude'],-1,1);
                     $latitude = substr($data['Latitude'],0,4);
