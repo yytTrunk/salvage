@@ -51,24 +51,30 @@ class worker extends Server
 
     public function onConnect($connection) {
         $ip = $connection->getRemoteIP();
-        $contents = "建立连接 remoteIp = $ip \n";
+        $contents = "建立连接 remoteIp = $ip";
         $commonService = new CommonService();
         $commonService->writeWorkmanLog($contents);
 
+        \think\facade\Cache::set('ip', $ip);
+
+        // echo \think\facade\Cache::get('ip');
+        // \think\facade\Cache::delete('ip');
         // $res = bin2hex("ALARM");
         // $connection->send($res);
     }
 
     public function onClose($connection) {
         $ip = $connection->getRemoteIP();
-        $contents = "断开连接 remoteIp = $ip \n";
+        $contents = "断开连接 remoteIp = $ip";
         $commonService = new CommonService();
         $commonService->writeWorkmanLog($contents);
+
+        echo \think\facade\Cache::get('ip');
     }
 
     public function onError($connection, $code, $msg) {
         $ip = $connection->getRemoteIP();
-        $contents = "连接 $ip error [ $code ] $msg\n";
+        $contents = "连接 $ip error [ $code ] $msg";
         $commonService = new CommonService();
         $commonService->writeWorkmanLog($contents);
     }
@@ -76,6 +82,7 @@ class worker extends Server
     public function onMessage($connection ,$data) {
         // 打印
         var_dump($data);
+
         //警报记录
         if ($data['Radar1_Warm'] == 1 || $data['Radar2_Warm'] == 1 || $data['Radar3_Warm'] == 1 || $data['Radar4_Warm'] == 1) {
             //检测经纬度是否为有效数据
@@ -119,6 +126,8 @@ class worker extends Server
                                 }
 
                             }
+                            // 写入缓存，用于报警
+                            \think\facade\Cache::set('alarm', 1);
                         }
 //                    }
 //                }

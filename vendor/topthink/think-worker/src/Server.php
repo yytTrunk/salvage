@@ -56,6 +56,8 @@ abstract class Server
 
     protected function init()
     {
+        // 启动前清空缓存
+        \think\facade\Cache::clear();
     }
 
     public function start()

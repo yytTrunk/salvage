@@ -9,16 +9,19 @@ class JsonNL
     {
         $data = $recv_buffer;
         $len = strlen($data);
-        for ($i=0;$i<$len;$i++){
-            $dump[] = sprintf("%s",sprintf("%02x",ord($data[$i])));
+        for ($i=0; $i<$len; $i++) {
+            echo sprintf("%s", sprintf("%02x", ord($data[$i])));
+            // 转化为16进制
+            $dump[] = sprintf("%s", sprintf("%02x", ord($data[$i])));
         }
+        echo "/r/n";
 
-        $Radar1_Warm = hexdec($dump[0]);
-
-        if (strlen($recv_buffer) < $Radar1_Warm){
+        // 比较消息长度是否合法
+        $msg_len = hexdec($dump[0]);
+        if (strlen($recv_buffer) < $msg_len) {
             return 0 ;
-        }else{
-            return $Radar1_Warm;
+        } else {
+            return $msg_len;
         }
     }
 
