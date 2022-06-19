@@ -51,10 +51,15 @@ class worker extends Server
 
     public function onConnect($connection) {
         $ip = $connection->getRemoteIP();
-        if (\think\facade\Cache::has($ip)) {
+        if (!\think\facade\Cache::has($ip)) {
             $contents = "有新的连接建立 remoteIp = $ip";
             $commonService = new CommonService();
             $commonService->writeWorkmanLog($contents);
+
+
+            $smsResp = $commonService->sendSMS("1825820361", "11111");
+            $commonService->writeWorkmanLog("发送短信，响应".implode($smsResp));
+
         } else {
             \think\facade\Cache::set($ip, $ip);
         }
@@ -140,6 +145,7 @@ class worker extends Server
                                 if ($user->tel) {
                                     // $server->sms($user->tel,$address);
                                     $smsResp = $server->sendSMS($user->tel, $address);
+                                    $server->writeWorkmanLog($smsResp);
                                 }
                             }
                             // 写入缓存，用于报警
