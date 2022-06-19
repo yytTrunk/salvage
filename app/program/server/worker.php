@@ -55,8 +55,6 @@ class worker extends Server
         $commonService = new CommonService();
         $commonService->writeWorkmanLog($contents);
 
-        \think\facade\Cache::set('ip', $ip);
-
         // echo \think\facade\Cache::get('ip');
         // \think\facade\Cache::delete('ip');
         // $res = bin2hex("ALARM");
@@ -68,8 +66,6 @@ class worker extends Server
         $contents = "断开连接 remoteIp = $ip";
         $commonService = new CommonService();
         $commonService->writeWorkmanLog($contents);
-
-        echo \think\facade\Cache::get('ip');
     }
 
     public function onError($connection, $code, $msg) {
@@ -114,7 +110,7 @@ class worker extends Server
                         $len = strlen($data['Longitude']);
                         $s = substr($data['Longitude'],0,$len-3);
                         $l = substr($data['Longitude'],-1,1);
-                        // cunchu
+                        // 存储
                         $model = new Alarm();
                         $model->name = '警报';
                         $model->BID = $data['ID'];
@@ -127,6 +123,7 @@ class worker extends Server
                             $model->delete();
                         } else {
                             // 向管理员与值班室发送数据
+                            $server->writeWorkmanLog("收到一次报警消息，将进行报警处理，设备 ID=".$data['ID']);
                             $users = User::where('role', 'in', User::ROLE_40.','.User::ROLE_10)->where(['status' => 1])->select();
                             foreach ($users as $user) {
                                 // 发送小程序弹窗告警
@@ -138,7 +135,6 @@ class worker extends Server
                                     // $server->sms($user->tel,$address);
                                     $smsResp = $server->sendSMS($user->tel, $address);
                                 }
-
                             }
                             // 写入缓存，用于报警
                             \think\facade\Cache::set('alarm', 1);
