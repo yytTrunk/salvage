@@ -51,10 +51,14 @@ class worker extends Server
 
     public function onConnect($connection) {
         $ip = $connection->getRemoteIP();
-        $contents = "建立连接 remoteIp = $ip";
-        $commonService = new CommonService();
-        $commonService->writeWorkmanLog($contents);
-
+        if (\think\facade\Cache::has('ip')) {
+            $contents = "有新的连接建立 remoteIp = $ip";
+            $commonService = new CommonService();
+            $commonService->writeWorkmanLog($contents);
+            
+        } else {
+            \think\facade\Cache::set('ip');
+        }
         // echo \think\facade\Cache::get('ip');
         // \think\facade\Cache::delete('ip');
         // $res = bin2hex("ALARM");
