@@ -51,16 +51,14 @@ class worker extends Server
 
     public function onConnect($connection) {
         $ip = $connection->getRemoteIP();
-        if (!\think\facade\Cache::has($ip)) {
-            $contents = "有新的连接建立 remoteIp = $ip";
-            $commonService = new CommonService();
-            $commonService->writeWorkmanLog($contents);
-
-
+        if (\think\facade\Cache::has($ip)) {
             // $smsResp = $commonService->sendSMS("1825820361", "11111");
             // $commonService->writeWorkmanLog("发送短信，响应".implode($smsResp));
 
         } else {
+            $contents = "有新的连接建立 remoteIp = $ip";
+            $commonService = new CommonService();
+            $commonService->writeWorkmanLog($contents);
             \think\facade\Cache::set($ip, $ip);
         }
         // echo \think\facade\Cache::get('ip');
