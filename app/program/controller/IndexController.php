@@ -176,7 +176,7 @@ class IndexController extends BaseController
         $user->password = md5($password);
         $user->role = $role;
         $user->tel = $tel;
-        $user->status = 2;
+        $user->status = 1;
         if (!$user->save()) {
             return $this->jsonFail('注册失败');
         }
@@ -195,6 +195,7 @@ class IndexController extends BaseController
     {
         $param = $request->post();
         $tel = $param['tel'];
+
         $accessKeyId = 'LTAIeaTl3FESlOZk';
         $accessSecret = 'vwgqcBq9h2k6xPCxxAcEYCVE3Exo1v'; //
         $signName = '落水人员预警系统'; //配置签名
@@ -230,8 +231,8 @@ class IndexController extends BaseController
             $opRes = $result->toArray();
             if ($opRes && $opRes['Code'] == "OK"){
                 //保存用户接收记录，当天允许查看留言
-                Cache::set($tel,$authCodeMT,60*5);
-                return $this->jsonSuccess('发送成功',['code' => $authCodeMT]);
+                Cache::set($tel, $authCodeMT, 60*5);
+                return $this->jsonSuccess('发送成功', ['code' => $authCodeMT]);
             }
 
         } catch (ClientException $e) {
