@@ -56,6 +56,7 @@ class JsonNL
         for ($i = 4;$i<8;$i++) {
             $ID .= hexdec($dump[$i]);
         }
+
         echo $ID;
 
         $res = '';

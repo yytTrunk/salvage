@@ -139,10 +139,9 @@ class worker extends Server
                                 $alarm_decode_address = "15号平台A侧";
                             } else if ($data['ID'] == "0021177" || $data['ID'] == "0021178") {
                                 $alarm_decode_address = "15号平台B侧";
-
-                            } else if ($data['ID'] == "0021177" || $data['ID'] == "0021178") {
+                            } else if ($data['ID'] == "0021192") {
                                 $alarm_decode_address = "15号平台C侧";
-                            } else if ($data['ID'] == "0021177" || $data['ID'] == "0021178") {
+                            } else if ($data['ID'] == "0021209" || $data['ID'] == "0021210") {
                                 $alarm_decode_address = "15号平台D侧";
                             }
 
