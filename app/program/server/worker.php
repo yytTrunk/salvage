@@ -133,16 +133,29 @@ class worker extends Server
                         } else {
                             // 向管理员与值班室发送数据
                             $server->writeWorkmanLog("收到一次报警消息，将进行报警处理，设备 ID=".$data['ID']);
+
+                            $alarm_decode_address = $data['ID'];
+                            if ($data['ID'] == "0021160") {
+                                $alarm_decode_address = "15号平台A侧";
+                            } else if ($data['ID'] == "0021177" || $data['ID'] == "0021178") {
+                                $alarm_decode_address = "15号平台B侧";
+
+                            } else if ($data['ID'] == "0021177" || $data['ID'] == "0021178") {
+                                $alarm_decode_address = "15号平台C侧";
+                            } else if ($data['ID'] == "0021177" || $data['ID'] == "0021178") {
+                                $alarm_decode_address = "15号平台D侧";
+                            }
+
                             $users = User::where('role', 'in', User::ROLE_40.','.User::ROLE_10)->where(['status' => 1])->select();
                             foreach ($users as $user) {
                                 // 发送小程序弹窗告警
                                 if ($user->openid) {
-                                    $server->sendMessageToUser($user->openid, '警报', $data['ID']);
+                                    $server->sendMessageToUser($user->openid, '警报', $alarm_decode_address);
                                 }
                                 // 发送短信        
                                 if ($user->tel) {
                                     // $server->sms($user->tel,$address);
-                                    $smsResp = $server->sendSMS($user->tel, $data['ID']);
+                                    $smsResp = $server->sendSMS($user->tel, $alarm_decode_address);
                                 }
                             }
 
