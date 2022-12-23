@@ -137,12 +137,12 @@ class worker extends Server
                             foreach ($users as $user) {
                                 // 发送小程序弹窗告警
                                 if ($user->openid) {
-                                    $server->sendMessageToUser($user->openid, '警报', $address);
+                                    $server->sendMessageToUser($user->openid, '警报', $data['ID']);
                                 }
                                 // 发送短信        
                                 if ($user->tel) {
                                     // $server->sms($user->tel,$address);
-                                    $smsResp = $server->sendSMS($user->tel, $address);
+                                    $smsResp = $server->sendSMS($user->tel, $data['ID']);
                                 }
                             }
 
