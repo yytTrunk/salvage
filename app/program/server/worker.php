@@ -145,6 +145,11 @@ class worker extends Server
                                     $smsResp = $server->sendSMS($user->tel, $address);
                                 }
                             }
+
+                            $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("ALARM");
+                            $server->writeWorkmanLog("触发一次本地报警器，设备 ID=".$data['ID']);
+                            $connection->send($msgAlarm);
+
                             // 写入缓存，用于报警
                             \think\facade\Cache::set('alarm', 1);
                         }
