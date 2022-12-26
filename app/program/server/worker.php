@@ -135,13 +135,13 @@ class worker extends Server
                             $server->writeWorkmanLog("收到一次报警消息，将进行报警处理，设备 ID=".$data['ID']);
 
                             $alarm_decode_address = $data['ID'];
-                            if ($data['ID'] == "0021160") {
+                            if ($data['ID'] == "1602100") {
                                 $alarm_decode_address = "15号平台A侧";
-                            } else if ($data['ID'] == "0021177" || $data['ID'] == "0021178") {
+                            } else if ($data['ID'] == "1772100" || $data['ID'] == "1782100") {
                                 $alarm_decode_address = "15号平台B侧";
-                            } else if ($data['ID'] == "0021192") {
+                            } else if ($data['ID'] == "1922100") {
                                 $alarm_decode_address = "15号平台C侧";
-                            } else if ($data['ID'] == "0021209" || $data['ID'] == "0021210") {
+                            } else if ($data['ID'] == "2092100" || $data['ID'] == "2102100") {
                                 $alarm_decode_address = "15号平台D侧";
                             }
 
