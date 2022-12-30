@@ -60,7 +60,7 @@ class JsonNL
         echo $ID;
 
         $res = '';
-        $gps_state = hexdec($dump[34]);
+        $gps_state = hexdec('00');
         $time = '';
 
 
