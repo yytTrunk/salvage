@@ -316,14 +316,14 @@ class IndexController extends BaseController
             return $this->jsonFail('您暂未拥有管理员权限');
         }
 
-        $facility_status = $param['facility_status'];
+        $alarm_status = $param['facility_status'];
         $id = $param['id'];
         $facility = Facility::where(['id' => $id])->find();
         if ($facility == null) {
             return $this->jsonFail('设备不存在');
         }
 
-        $facility->facility_status = $facility_status;
+        $facility->alarm_status = $alarm_status;
         if (!$facility->save()) {
             return $this->jsonFail('更新失败');
         }
