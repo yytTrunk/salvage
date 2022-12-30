@@ -5,6 +5,9 @@ namespace Workerman\Protocols;
 
 class JsonNL
 {
+    /**
+     * input 先于 decode 执行
+     */
     public static function input($recv_buffer)
     {
         $data = $recv_buffer;
@@ -43,9 +46,9 @@ class JsonNL
         $test = '';
         for ($i=0;$i<$len;$i++){
             $dump[] = sprintf("%s",sprintf("%02x",ord($data[$i])));
-            if ($i>=12&&$i<16) {
-                $test .= $data[$i];
-            }
+            // if ($i>=12&&$i<16) {
+            //     $test .= $data[$i];
+            // }
         }
 
 ////        $a = hexdec('01234567');
@@ -56,14 +59,24 @@ class JsonNL
         for ($i = 4;$i<8;$i++) {
             $ID .= hexdec($dump[$i]);
         }
-
         echo $ID;
 
         $res = '';
         $gps_state = hexdec('00');
         $time = '';
 
-
+        if ($len < 20) {
+            $res = [
+                'ID' => $ID,
+                'data' => $recv_buffer,
+                'Radar1_Warm' => 0,
+                'Radar2_Warm' => 0,
+                'Radar3_Warm' => 0,
+                'Radar4_Warm' => 0
+            ];
+            return $res;
+        } 
+        
         //时间
         for ($i = 35 ;$i<45;$i++) {
             $time.= chr(hexdec($dump[$i]));
