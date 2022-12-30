@@ -94,6 +94,7 @@ class worker extends Server
         $server = new CommonService();
         // 16 进制 395b6419， 字符串为 579110025
         $ID = $data['ID'];
+        $server->writeWorkmanLog("消息发送方的设备ID=".$ID);
         if ($ID == "579110025") {
             // 读取缓存
             if (\think\facade\Cache::has('alarm')) {
