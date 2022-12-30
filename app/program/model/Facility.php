@@ -19,4 +19,13 @@ class Facility extends Model
      */
     const STATUS_20 = 20;
 
+    /**
+     * @var integer 报警开
+     */
+    const ALARM_STATUS_0 = 0;
+
+    /**
+     * @var integer 报警关
+     */
+    const ALARM_STATUS_1 = 1;
 }

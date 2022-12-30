@@ -304,6 +304,33 @@ class IndexController extends BaseController
         ]);
     }
 
+    /**
+     * 更新设备
+     */
+    public function updateFacility(Request $request):json
+    {
+        $param = $request->post();
+        $user_id = $param['user_id'];
+        $user = User::where(['id' => $user_id])->find();
+        if ($user->role != User::ROLE_40) {
+            return $this->jsonFail('您暂未拥有管理员权限');
+        }
+
+        $facility_status = $param['facility_status'];
+        $id = $param['id'];
+        $facility = Facility::where(['id' => $id])->find();
+        if ($facility == null) {
+            return $this->jsonFail('设备不存在');
+        }
+
+        $facility->facility_status = $facility_status;
+        if (!$facility->save()) {
+            return $this->jsonFail('更新失败');
+        }
+
+        return $this->jsonSuccess('OK');
+    }
+
     public function lockRole30(Request $request):Json
     {
         $param = $request->post();
