@@ -316,7 +316,7 @@ class IndexController extends BaseController
             return $this->jsonFail('您暂未拥有管理员权限');
         }
 
-        $alarm_status = $param['facility_status'];
+        $alarm_status = $param['alarm_status'];
         $id = $param['id'];
         $facility = Facility::where(['id' => $id])->find();
         if ($facility == null) {
