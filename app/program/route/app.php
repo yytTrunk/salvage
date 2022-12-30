@@ -16,6 +16,7 @@ Route::post('/admin/role20/unlock','index/unLockRole20');
 Route::post('/admin/role10/lock','index/lockRole10');
 Route::post('/admin/role10/unlock','index/unLockRole10');
 Route::post('/admin','index/admin');
+Route::post('/facility','index/queryAllFacility');
 
 
 Route::post('/yacht/add','manage/add');

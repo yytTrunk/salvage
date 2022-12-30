@@ -286,6 +286,24 @@ class IndexController extends BaseController
         ]);
     }
 
+    /**
+     * 查询设备
+     */
+    public function queryAllFacility(Request $request):json
+    {
+        $param = $request->post();
+        $user_id = $param['user_id'];
+        $user = User::where(['id' => $user_id])->find();
+        if ($user->role != User::ROLE_40) {
+            return $this->jsonFail('您暂未拥有管理员权限');
+        }
+
+        $facility = Facility::where(['status' => Facility::STATUS_10])->select();
+        return $this->jsonSuccess('OK',[
+            'facility' => $facility,
+        ]);
+    }
+
     public function lockRole30(Request $request):Json
     {
         $param = $request->post();
