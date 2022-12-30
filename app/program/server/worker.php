@@ -54,6 +54,9 @@ class worker extends Server
         if (\think\facade\Cache::has($ip)) {
             // $smsResp = $commonService->sendSMS("1825820361", "11111");
             // $commonService->writeWorkmanLog("发送短信，响应".implode($smsResp));
+            $contents = "心跳 remoteIp = $ip";
+            $commonService = new CommonService();
+            $commonService->writeWorkmanLog($contents);
 
         } else {
             $contents = "有新的连接建立 remoteIp = $ip";
