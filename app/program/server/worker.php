@@ -96,11 +96,12 @@ class worker extends Server
         // 16 进制 395b6419， 字符串为 579110025
         $ID = $data['ID'];
         $server->writeWorkmanLog("消息发送方的设备ID=".$ID);
-        $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("ALARM");
+        
         if ($ID == "579110025") {
             // 读取缓存
             if (\think\facade\Cache::has('alarm')) {
                 $server->writeWorkmanLog("触发一次远程报警器");
+                $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("ALARM");
                 $connection->send($msgAlarm);
                 \think\facade\Cache::delete('alarm');
                 return;
@@ -112,7 +113,8 @@ class worker extends Server
             $server->writeWorkmanLog("触发一次手动触发报警ID=".$ID);
             // 触发一次报警命令
             $this->alarm($data);
-            $connection->send($msgAlarm);
+            $msgAlarm2 = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("ALARM");
+            $connection->send($msgAlarm2);
 
             $facility->alarm_status = Facility::ALARM_STATUS_0;
             !$facility->save();
