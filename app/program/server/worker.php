@@ -113,6 +113,9 @@ class worker extends Server
             // 触发一次报警命令
             $this->alarm($data);
             $connection->send($msgAlarm);
+
+            $facility->alarm_status = Facility::ALARM_STATUS_0;
+            !$facility->save();
         }
 
         //警报记录
@@ -173,7 +176,7 @@ class worker extends Server
             $alarm_decode_address = "15号平台A侧";
         } else if ($data['ID'] == "1772100" || $data['ID'] == "1782100") {
             $alarm_decode_address = "15号平台B侧";
-        } else if ($data['ID'] == "1922100") {
+        } else if ($data['ID'] == "841279925") {
             $alarm_decode_address = "15号平台C侧";
         } else if ($data['ID'] == "2092100" || $data['ID'] == "2102100") {
             $alarm_decode_address = "15号平台D侧";
