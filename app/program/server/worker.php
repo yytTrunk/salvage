@@ -111,13 +111,13 @@ class worker extends Server
         $facility = Facility::where(['facility_id' => $ID])->find();
         if ($facility != null && $facility->alarm_status == Facility::ALARM_STATUS_1) {
             $server->writeWorkmanLog("触发一次手动触发报警ID=".$ID);
+            $facility->alarm_status = Facility::ALARM_STATUS_0;
+            $facility->save();
+
             // 触发一次报警命令
             $this->alarm($data);
             $msgAlarm2 = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
             $connection->send($msgAlarm2);
-
-            $facility->alarm_status = Facility::ALARM_STATUS_0;
-            $facility->save();
         }
 
         //警报记录
