@@ -101,7 +101,7 @@ class worker extends Server
             // 读取缓存
             if (\think\facade\Cache::has('alarm')) {
                 $server->writeWorkmanLog("触发一次远程报警器");
-                $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AAAALARM");
+                $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
                 $connection->send($msgAlarm);
                 \think\facade\Cache::delete('alarm');
                 return;
@@ -113,11 +113,11 @@ class worker extends Server
             $server->writeWorkmanLog("触发一次手动触发报警ID=".$ID);
             // 触发一次报警命令
             $this->alarm($data);
-            $msgAlarm2 = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AAAALARM");
+            $msgAlarm2 = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
             $connection->send($msgAlarm2);
 
             $facility->alarm_status = Facility::ALARM_STATUS_0;
-            !$facility->save();
+            $facility->save();
         }
 
         //警报记录
@@ -154,7 +154,7 @@ class worker extends Server
                             // 触发一次报警命令
                             $this->alarm($data);
 
-                            $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AAAALARM");
+                            $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
                             $server->writeWorkmanLog("触发一次本地报警器，设备 ID=".$data['ID']);
                             $connection->send($msgAlarm);
 
