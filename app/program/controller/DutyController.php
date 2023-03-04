@@ -27,18 +27,23 @@ class DutyController extends BaseController
     {
         $param = $request->post();
         $user_id = $param['user_id'];
+        $status_codes = $param['status_codes'];
+
         $user = User::where(['id' => $user_id])->find();
         $data = [];
+        
         if ($user->role == User::ROLE_10) {
-            $data = Alarm::where('status', '<>', Alarm::STATUS_40)->where('status', '<>', Alarm::STATUS_30)->order('create_time','desc')->select();
-        }
-
-        if ($user->role == User::ROLE_20) {
-            $data = Alarm::where('status', 'in',  Alarm::STATUS_50 . ',' . Alarm::STATUS_20)->order('create_time','desc')->select();
-        }
-
-        if ($user->role == User::ROLE_30) {
-            $data = Alarm::where('status', 'in',  Alarm::STATUS_50 . ',' . Alarm::STATUS_20 )->order('create_time','desc')->select();
+            // 值班室
+            // $data = Alarm::where('status', '<>', Alarm::STATUS_40)->where('status', '<>', Alarm::STATUS_30)->order('create_time','desc')->select();
+            $data = Alarm::where('status', 'in',  $status_codes)->order('create_time','desc')->select();
+        } else if ($user->role == User::ROLE_20) {
+            // 游艇
+            // $data = Alarm::where('status', 'in',  Alarm::STATUS_50 . ',' . Alarm::STATUS_20)->order('create_time','desc')->select();
+            $data = Alarm::where('status', 'in',  $status_codes)->order('create_time','desc')->select();
+        } else if ($user->role == User::ROLE_30) {
+            // 指挥中心
+            // $data = Alarm::where('status', 'in',  Alarm::STATUS_50 . ',' . Alarm::STATUS_20 )->order('create_time','desc')->select();
+            $data = Alarm::where('status', 'in',  $status_codes)->order('create_time','desc')->select();
         }
 
         $facility_arrs = Facility::where(['status' => Facility::STATUS_10])->select()->toArray();
