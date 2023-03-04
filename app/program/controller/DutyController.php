@@ -51,8 +51,8 @@ class DutyController extends BaseController
         if ($data) {
             foreach ($data as $item) {
                 global $facility_maps;
-                $item->status = $item->getStatusName();
                 $item->status_code = $item->status;
+                $item->status = $item->getStatusName();
                 $item->facility_name = empty($facility_maps[$item->BID]) ? "" : $facility_maps[$item->BID];
                 $item->log = AlarmLog::where(['alarm_id' => $item->id])->select();
             }
