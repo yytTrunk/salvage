@@ -171,6 +171,7 @@ class DutyController extends BaseController
         $alarm_id = $param['alarm_id'];
         $user = User::where(['id' => $user_id])->find();
         $alarm = Alarm::where(['id' => $alarm_id])->find();
+
         Db::startTrans();
         $model = new AlarmLog();
         $model->user_id = $user_id;
@@ -190,26 +191,24 @@ class DutyController extends BaseController
 
         Db::commit();
 
-        //传达信息到指挥中心，游艇
+        //传达通知信息到指挥中心，游艇账户
         $user_list = User::where('role','in',User::ROLE_20.','.User::ROLE_30)->select();
+        $facility = Facility::where(['facility_id' => $alarm->BID])->find();
         $server = new CommonService();
         foreach ($user_list as $user) {
             if ($user->openid) {
-                $longitude = substr($alarm->longitude,0,5);
-                $longitudeE = substr($alarm->longitude,-1,1);
-                $latitude = substr($alarm->latitude,0,4);
-                $latitudeE = substr($alarm->latitude,-1,1);
-                $address = $longitude.$longitudeE.$latitude.$latitudeE;
-                $server->sendMessageToUser($user->openid,'警报',$address);
-
+                // $longitude = substr($alarm->longitude,0,5);
+                // $longitudeE = substr($alarm->longitude,-1,1);
+                // $latitude = substr($alarm->latitude,0,4);
+                // $latitudeE = substr($alarm->latitude,-1,1);
+                // $address = $longitude.$longitudeE.$latitude.$latitudeE;
+                $server->sendMessageToUser($user->openid,'警报', $facility->title);
             }
 
             if ($user->tel) {
-                $server->sendSMS($user->tel,$address);
+                $server->sendSMS($user->tel, $facility->title);
             }
-
         }
-
 
         return $this->jsonSuccess('OK',$user_list);
     }
