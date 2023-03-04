@@ -156,7 +156,7 @@ class DutyController extends BaseController
     public function conveyAlarm(Request $request): Json
     {
         $param = $request->post();
-        $user_id = $param['user_id'];
+        $user_id = $param['user_id']; 
         $alarm_id = $param['alarm_id'];
         $user = User::where(['id' => $user_id])->find();
         $alarm = Alarm::where(['id' => $alarm_id])->find();
