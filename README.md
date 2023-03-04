@@ -70,6 +70,7 @@ php think worker:server start 普通启动
 php think worker:server status 查看状态
 php think worker:server stop 停止监听
 
+本地需要，远程依赖于宝塔不需要执行下面命令来启动服务
 php think stop 关闭守护进程
 php think run  本地打开web服务
 
