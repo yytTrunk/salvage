@@ -89,6 +89,33 @@ class DutyController extends BaseController
         return $this->jsonSuccess('OK', $data);
     }
 
+    
+    /**
+     * 查询一条告警处理的详细信息
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function alarmDetail(Request $request): Json
+    {
+        $param = $request->post();
+        $alarm_id = $param['alarm_id'];
+
+        $alarm = Alarm::where(['id' => $alarm_id])->find();
+
+        $facility = Facility::where(['facility_id' => $alarm->BID])->find();
+
+        if ($alarm) {
+            $alarm->status_code = $alarm->status;
+            $alarm->status = $alarm->getStatusName();
+            $alarm->facility_name = $facility->title;
+            $alarm->log = AlarmLog::where(['alarm_id' => $alarm->id])->select();
+        }
+
+        return $this->jsonSuccess('OK', $alarm);
+    }
+
     /**
      * 接警
      * @param Request $request
