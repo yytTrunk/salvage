@@ -103,14 +103,16 @@ class DutyController extends BaseController
         $alarm_id = $param['alarm_id'];
 
         $alarm = Alarm::where(['id' => $alarm_id])->find();
-
-        $facility = Facility::where(['facility_id' => $alarm->BID])->find();
-
         if ($alarm) {
+            $facility = Facility::where(['facility_id' => $alarm->BID])->find();
+
+
             $alarm->status_code = $alarm->status;
             $alarm->status = $alarm->getStatusName();
             $alarm->facility_name = $facility->title;
             $alarm->log = AlarmLog::where(['alarm_id' => $alarm->id])->select();
+        } else {
+            return $this->jsonFail('查询记录不存在');
         }
 
         return $this->jsonSuccess('OK', $alarm);
