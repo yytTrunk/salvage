@@ -7,6 +7,7 @@ namespace app\program\controller;
 use app\program\BaseController;
 use app\program\model\Alarm;
 use app\program\model\AlarmLog;
+use app\program\model\Facility;
 use app\program\model\User;
 use app\program\service\CommonService;
 use app\Request;
@@ -40,10 +41,19 @@ class DutyController extends BaseController
             $data = Alarm::where('status', 'in',  Alarm::STATUS_50 . ',' . Alarm::STATUS_20 )->order('create_time','desc')->select();
         }
 
+        $facility_arrs = Facility::where(['status' => Facility::STATUS_10])->select()->toArray();
+        $facility_maps = array();
+        array_map(function($item){
+            global $facility_maps;
+            $facility_maps[ $item['facility_id'] ]= $item['title'];
+        }, $facility_arrs);
+
         if ($data) {
             foreach ($data as $item) {
+                global $facility_maps;
                 $item->status = $item->getStatusName();
                 $item->log = AlarmLog::where(['alarm_id' => $item->id])->select();
+                $item->facility_name = empty($facility_maps[$item->BID]) ? "" : $facility_maps[$item->BID];
             }
         }
 
