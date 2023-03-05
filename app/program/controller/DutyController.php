@@ -59,9 +59,9 @@ class DutyController extends BaseController
                 $item->status_code = $item->status;
                 $item->status = $item->getStatusName();
                 $item->facility_name = empty($facility_maps[$item->BID]) ? "" : $facility_maps[$item->BID];
-                $item->log = AlarmLog::where(['alarm_id' => $item->id])->select();
+                $count = AlarmLog::where(['alarm_id' => $item->id])->count();
                 // 如果是游艇，需要剔除掉，在值班室就确认为误报的，此时在游艇用户里不能返回展示
-                if ($user->role == User::ROLE_20 && $status_codes == Alarm::STATUS_30 && count($item->log) < 2) {
+                if ($user->role == User::ROLE_20 && $status_codes == Alarm::STATUS_30 && $count < 2) {
                     unset($data[$key]);
                 }
             }
