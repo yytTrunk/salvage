@@ -95,7 +95,13 @@ class worker extends Server
         $server = new CommonService();
         // 16 进制 395b6419， 字符串为 579110025
         $ID = $data['ID'];
-        $server->writeWorkmanLog("消息发送方的设备ID=".$ID);
+        
+        $facility = Facility::where(['facility_id' => $ID])->find();
+        $contents = "";
+        if ($facility) {
+            $contents = $facility -> title;
+        }
+        $server->writeWorkmanLog("消息发送方的设备ID=".$ID."    名称为  ".$contents);
         
         if ($ID == "579110025") {
             // 读取缓存
@@ -108,7 +114,6 @@ class worker extends Server
             }
         }
 
-        $facility = Facility::where(['facility_id' => $ID])->find();
         if ($facility != null && $facility->alarm_status == Facility::ALARM_STATUS_1) {
             $server->writeWorkmanLog("触发一次手动触发报警ID=".$ID);
             $facility->alarm_status = Facility::ALARM_STATUS_0;
@@ -174,14 +179,9 @@ class worker extends Server
 
     public function alarm($data) {
         $alarm_decode_address = $data['ID'];
-        if ($data['ID'] == "1602100") {
-            $alarm_decode_address = "15号平台A侧";
-        } else if ($data['ID'] == "1772100" || $data['ID'] == "1782100") {
-            $alarm_decode_address = "15号平台B侧";
-        } else if ($data['ID'] == "841279925") {
-            $alarm_decode_address = "15号平台C侧";
-        } else if ($data['ID'] == "2092100" || $data['ID'] == "2102100") {
-            $alarm_decode_address = "15号平台D侧";
+        $facility = Facility::where(['facility_id' => $data['ID']])->find();
+        if ($facility) {
+            $alarm_decode_address = $facility -> title;
         }
 
         $server = new CommonService();
