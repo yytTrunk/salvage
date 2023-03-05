@@ -229,7 +229,7 @@ class IndexController extends BaseController
                 ->request();
 
             $opRes = $result->toArray();
-            return $this->jsonFail($opRes);
+            return $this->jsonSuccess($opRes);
             if ($opRes && $opRes['Code'] == "OK"){
                 //保存用户接收记录，当天允许查看留言
                 Cache::set($tel, $authCodeMT, 60*5);
