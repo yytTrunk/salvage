@@ -74,6 +74,12 @@ php think worker:server stop 停止监听
 php think stop 关闭守护进程
 php think run  本地打开web服务
 
+第二种关闭服务
+lsof -i:999
+kill -9 进程
+
+
+
 ### 日志
 创建目录下 /runtime/myworkman/log  记录业务workman日志
 设置cache目录为root权限，避免不能写入

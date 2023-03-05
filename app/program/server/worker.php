@@ -123,6 +123,16 @@ class worker extends Server
             $this->alarm($data);
             $msgAlarm2 = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
             $connection->send($msgAlarm2);
+
+            // 新增一条记录
+            $model = new Alarm();
+            $model->name = '警报';
+            $model->BID = $data['ID'];
+            $model->longitude = "117.2423E";
+            $model->latitude = "2517.2831N";
+            $model->status = Alarm::STATUS_10;
+            $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
+            $model->save();
         }
 
         //警报记录
