@@ -150,11 +150,11 @@ class IndexController extends BaseController
             return $this->jsonFail('两次密码不一致');
         }
 
-        if (!Cache::get($tel)) {
+        if (!\think\facade\Cache::get($tel)) {
             return $this->jsonFail('验证码已过期，请重新获取有效验证码！');
         }
 
-        if (Cache::get($tel) !== $authCode) {
+        if (\think\facade\Cache::get($tel) !== $authCode) {
             return $this->jsonFail('请输入正确验证码');
         }
 
@@ -229,11 +229,11 @@ class IndexController extends BaseController
                 ->request();
 
             $opRes = $result->toArray();
-            // if ($opRes && $opRes['Code'] == "OK"){
+            if ($opRes && $opRes['Code'] == "OK"){
                 //保存用户接收记录，当天允许查看留言
-                Cache::set($tel, $authCodeMT, 60*5);
+                \think\facade\Cache::set($tel, $authCodeMT, 60*5);
                 return $this->jsonSuccess('发送成功', ['code' => $authCodeMT]);
-            // }
+            }
 
         } catch (ClientException $e) {
             return $this->jsonFail('发送失败');
