@@ -101,7 +101,7 @@ class worker extends Server
         if ($facility) {
             $contents = $facility -> title;
         }
-        $server->writeWorkmanLog("消息发送方的设备ID=".$ID."    名称为  ".$contents);
+        $server->writeWorkmanLog("onMessage消息发送方的设备ID=$ID    名称为  $contents");
         
         if ($ID == "579110025") {
             // 读取缓存
