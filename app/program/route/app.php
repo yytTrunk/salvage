@@ -39,4 +39,5 @@ Route::post('/duty/cancelAlarm','duty/cancelAlarm');
 Route::post('/duty/completeAlarm','duty/completeAlarm');
 Route::post('/duty/conveyAlarm','duty/conveyAlarm');
 Route::post('/duty/alarmDetail','duty/alarmDetail');
+Route::post('/duty/handleYSMsg','duty/handleYSMsg');
 

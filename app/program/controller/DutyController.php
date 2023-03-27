@@ -289,6 +289,39 @@ class DutyController extends BaseController
 
         return $this->jsonSuccess('OK');
     }
+
+    /**
+     * 处理萤石云消息
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function handleYSMsg(Request $request): Json
+    {
+
+        $param = $request->post();
+        $commonService = new CommonService();
+        $commonService->writeWorkmanLog("接收到消息");
+        $commonService->writeWorkmanLog($param);
+        // $param = $request->post();
+        // $alarm_id = $param['alarm_id'];
+
+        // $alarm = Alarm::where(['id' => $alarm_id])->find();
+        // if ($alarm) {
+        //     $facility = Facility::where(['facility_id' => $alarm->BID])->find();
+
+
+        //     $alarm->status_code = $alarm->status;
+        //     $alarm->status = $alarm->getStatusName();
+        //     $alarm->facility_name = $facility->title;
+        //     $alarm->log = AlarmLog::where(['alarm_id' => $alarm->id])->select();
+        // } else {
+        //     return $this->jsonFail('查询记录不存在');
+        // }
+
+        return $this->jsonSuccess('OK');
+    }
 }
 
 
