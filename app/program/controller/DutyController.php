@@ -304,9 +304,11 @@ class DutyController extends BaseController
         $param = $request->post();
         // $header = $param['header'];
         // $messageId = $header['messageId'];
-        dump($request);
+        // dump($request);
+        $messageId = $request->header('messageId');
         Log::write("接收到消息");
-        Log::write($param);
+        Log::write($request);
+        Log::write($messageId);
         // $param = $request->post();
         // $alarm_id = $param['alarm_id'];
 
@@ -323,7 +325,7 @@ class DutyController extends BaseController
         //     return $this->jsonFail('查询记录不存在');
         // }
         return \json([
-            'messageId' => "23"
+            'messageId' => $messageId
          ]);
     }
 }
