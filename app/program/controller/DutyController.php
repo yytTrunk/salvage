@@ -321,11 +321,11 @@ class DutyController extends BaseController
         // } else {
         //     return $this->jsonFail('查询记录不存在');
         // }
-        return $this->jsonSuccess('ok', ['messageId' => $messageId]);
-        // return \json([
-        //     'code'      => self::CODE_SUCCESS,
-        //     'messageId'   => $messageId
-        // ]);
+        // return $this->jsonSuccess('ok', ['messageId' => $messageId]);
+        return \json([
+            'messageId'   => $messageId,
+            'code' => self::CODE_SUCCESS,
+        ]);
     }
 }
 
