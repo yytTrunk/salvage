@@ -301,13 +301,12 @@ class DutyController extends BaseController
     public function handleYSMsg(Request $request): Json
     {
 
-        $param = $request->post();
+        // $param = $request->post();
         // $header = $param['header'];
         // $messageId = $header['messageId'];
         // dump($request);
         $messageId = $request->header('messageId');
         Log::write("接收到消息");
-        Log::write($request);
         Log::write($messageId);
         // $param = $request->post();
         // $alarm_id = $param['alarm_id'];
