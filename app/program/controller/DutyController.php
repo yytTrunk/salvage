@@ -323,6 +323,7 @@ class DutyController extends BaseController
         // }
 
         return \json([
+            'code'      => self::CODE_SUCCESS,
             'messageId'   => $messageId
         ]);
     }
