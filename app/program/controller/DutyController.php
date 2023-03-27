@@ -320,7 +320,9 @@ class DutyController extends BaseController
         //     return $this->jsonFail('查询记录不存在');
         // }
 
-        return $this->jsonSuccess('OK');
+        return \json([
+            'messageId'   => "5e57f239793f2b007fecb0de"
+        ]);
     }
 }
 
