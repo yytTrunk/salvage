@@ -302,8 +302,10 @@ class DutyController extends BaseController
     {
 
         $param = $request->post();
+        $header = $param['header'];
+        $messageId = $header['messageId'];
         Log::write("接收到消息");
-        Log::write($param);
+        Log::write($messageId);
         // $param = $request->post();
         // $alarm_id = $param['alarm_id'];
 
@@ -321,7 +323,7 @@ class DutyController extends BaseController
         // }
 
         return \json([
-            'messageId'   => "5e57f239793f2b007fecb0de"
+            'messageId'   => $messageId
         ]);
     }
 }
