@@ -302,8 +302,8 @@ class DutyController extends BaseController
     {
 
         $param = $request->post();
-        $header = $param['header'];
-        $messageId = $header['messageId'];
+        $messageId= $request->header('messageId');
+
         Log::write("接收到消息");
         Log::write($messageId);
         // $param = $request->post();
