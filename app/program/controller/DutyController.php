@@ -13,6 +13,7 @@ use app\program\service\CommonService;
 use app\Request;
 use think\facade\Db;
 use think\response\Json;
+use think\facade\Log;
 
 class DutyController extends BaseController
 {
@@ -301,9 +302,8 @@ class DutyController extends BaseController
     {
 
         $param = $request->post();
-        $commonService = new CommonService();
-        $commonService->writeWorkmanLog("接收到消息");
-        $commonService->writeWorkmanLog($param);
+        Log::write("接收到消息");
+        Log::write($param);
         // $param = $request->post();
         // $alarm_id = $param['alarm_id'];
 
