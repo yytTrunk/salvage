@@ -32,7 +32,7 @@ class DutyController extends BaseController
 
         $user = User::where(['id' => $user_id])->find();
         $data = [];
-        
+
         // if ($user->role == User::ROLE_10) {
         //     // 值班室
         //     // $data = Alarm::where('status', '<>', Alarm::STATUS_40)->where('status', '<>', Alarm::STATUS_30)->order('create_time','desc')->select();
@@ -46,13 +46,13 @@ class DutyController extends BaseController
         //     // $data = Alarm::where('status', 'in',  Alarm::STATUS_50 . ',' . Alarm::STATUS_20 )->order('create_time','desc')->select();
         //     $data = Alarm::where('status', 'in',  $status_codes)->order('create_time','desc')->select();
         // }
-        $data = Alarm::where('status', 'in',  $status_codes)->order('create_time','desc')->select();
+        $data = Alarm::where('status', 'in',  $status_codes)->order('create_time', 'desc')->select();
 
         $facility_arrs = Facility::where(['status' => Facility::STATUS_10])->select()->toArray();
         $facility_maps = array();
-        array_map(function($item){
+        array_map(function ($item) {
             global $facility_maps;
-            $facility_maps[ $item['facility_id'] ]= $item['title'];
+            $facility_maps[$item['facility_id']] = $item['title'];
         }, $facility_arrs);
 
         if ($data) {
@@ -82,7 +82,7 @@ class DutyController extends BaseController
      */
     public function alarmLogLists(): Json
     {
-        $data = Alarm::where('status', 'in', Alarm::STATUS_30.','.Alarm::STATUS_40)->order('create_time','desc')->select();
+        $data = Alarm::where('status', 'in', Alarm::STATUS_30 . ',' . Alarm::STATUS_40)->order('create_time', 'desc')->select();
 
         foreach ($data as $item) {
             $item->status = $item->getStatusName();
@@ -91,7 +91,7 @@ class DutyController extends BaseController
         return $this->jsonSuccess('OK', $data);
     }
 
-    
+
     /**
      * 查询一条告警处理的详细信息
      * @return Json
@@ -207,7 +207,7 @@ class DutyController extends BaseController
     public function conveyAlarm(Request $request): Json
     {
         $param = $request->post();
-        $user_id = $param['user_id']; 
+        $user_id = $param['user_id'];
         $alarm_id = $param['alarm_id'];
         $user = User::where(['id' => $user_id])->find();
         $alarm = Alarm::where(['id' => $alarm_id])->find();
@@ -232,7 +232,7 @@ class DutyController extends BaseController
         Db::commit();
 
         //传达通知信息到指挥中心，游艇账户
-        $user_list = User::where('role','in',User::ROLE_20.','.User::ROLE_30)->select();
+        $user_list = User::where('role', 'in', User::ROLE_20 . ',' . User::ROLE_30)->select();
         $facility = Facility::where(['facility_id' => $alarm->BID])->find();
         $server = new CommonService();
         foreach ($user_list as $user) {
@@ -242,7 +242,7 @@ class DutyController extends BaseController
                 // $latitude = substr($alarm->latitude,0,4);
                 // $latitudeE = substr($alarm->latitude,-1,1);
                 // $address = $longitude.$longitudeE.$latitude.$latitudeE;
-                $server->sendMessageToUser($user->openid,'警报', $facility->title);
+                $server->sendMessageToUser($user->openid, '警报', $facility->title);
             }
 
             if ($user->tel) {
@@ -250,7 +250,7 @@ class DutyController extends BaseController
             }
         }
 
-        return $this->jsonSuccess('OK',$user_list);
+        return $this->jsonSuccess('OK', $user_list);
     }
 
     /**
@@ -261,7 +261,7 @@ class DutyController extends BaseController
      * @throws \think\db\exception\DbException
      * @throws \think\db\exception\ModelNotFoundException
      */
-    public function completeAlarm(Request $request):Json
+    public function completeAlarm(Request $request): Json
     {
         $param = $request->post();
         $user_id = $param['user_id'];
@@ -300,33 +300,22 @@ class DutyController extends BaseController
      */
     public function handleYSMsg(Request $request): Json
     {
+        $input = json_decode(file_get_contents("php://input"));
+        Log::write('接收到摄像头告警：' . json_encode($input));
+        $deviceId = $input->header->deviceId;
+        $alarmType = $input->body->alarmType;
 
-        // $param = $request->post();
-        // $header = $param['header'];
-        // $messageId = $header['messageId'];
-        // dump($request);
-        $messageId = $request->header('messageId');
-        Log::write("接收到消息");
-        Log::write($messageId);
-        // $param = $request->post();
-        // $alarm_id = $param['alarm_id'];
-
-        // $alarm = Alarm::where(['id' => $alarm_id])->find();
-        // if ($alarm) {
-        //     $facility = Facility::where(['facility_id' => $alarm->BID])->find();
+        $facility = Facility::where(['camera_serial_num' => $deviceId])->find();
+        Log::write('接收到摄像头告警 deviceID = ：' . $deviceId . '位置： '. $facility->title . ' 告警类型 '.  $alarmType);
+        if ($facility) {
+            if ($alarmType == "linedetection") {
+                Log::write('ok');
+            }
+        }
 
 
-        //     $alarm->status_code = $alarm->status;
-        //     $alarm->status = $alarm->getStatusName();
-        //     $alarm->facility_name = $facility->title;
-        //     $alarm->log = AlarmLog::where(['alarm_id' => $alarm->id])->select();
-        // } else {
-        //     return $this->jsonFail('查询记录不存在');
-        // }
         return \json([
-            'messageId' => $messageId
-         ]);
+            'messageId' => $input->header->messageId
+        ]);
     }
 }
-
-
