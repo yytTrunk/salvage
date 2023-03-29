@@ -309,6 +309,7 @@ class DutyController extends BaseController
         Log::write('接收到摄像头告警 deviceID = ' . $deviceId . ' 位置 = '. $facility->title . ' 告警类型 = '.  $alarmType);
         if ($facility) {
             if ($alarmType == "linedetection") {
+                
                 // 新增一条告警记录
                 $model = new Alarm();
                 $model->name = '警报';
@@ -317,6 +318,10 @@ class DutyController extends BaseController
                 $model->latitude = "2517.2831N";
                 $model->status = Alarm::STATUS_10;
                 $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
+                $size = $input->body->pictureList->getSize();
+                if ($size > 0) {
+                    $model->camera_pic = current($input->body->pictureList);
+                }
                 $model->save();
 
                 $server = new CommonService();
