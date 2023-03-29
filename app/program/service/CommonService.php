@@ -6,6 +6,8 @@ namespace app\program\service;
 use AlibabaCloud\Client\AlibabaCloud;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
+use app\program\model\User;
+use app\program\model\Facility;
 use think\App;
 
 
@@ -144,6 +146,21 @@ class CommonService
 
         } catch (ServerException $e) {
 
+        }
+    }
+
+    public function alarm($alarm_decode_address) {
+        $users = User::where('role', 'in', User::ROLE_40.','.User::ROLE_10)->where(['status' => 1])->select();
+        foreach ($users as $user) {
+            // 发送小程序弹窗告警
+            if ($user->openid) {
+                $this->sendMessageToUser($user->openid, '警报', $alarm_decode_address);
+            }
+            // 发送短信        
+            if ($user->tel) {
+                // $server->sms($user->tel,$address);
+                $smsResp = $this->sendSMS($user->tel, $alarm_decode_address);
+            }
         }
     }
 

@@ -306,10 +306,21 @@ class DutyController extends BaseController
         $alarmType = $input->body->alarmType;
 
         $facility = Facility::where(['camera_serial_num' => $deviceId])->find();
-        Log::write('接收到摄像头告警 deviceID = ：' . $deviceId . '位置： '. $facility->title . ' 告警类型 '.  $alarmType);
+        Log::write('接收到摄像头告警 deviceID = ' . $deviceId . ' 位置 = '. $facility->title . ' 告警类型 = '.  $alarmType);
         if ($facility) {
             if ($alarmType == "linedetection") {
-                Log::write('ok');
+                // 新增一条告警记录
+                $model = new Alarm();
+                $model->name = '警报';
+                $model->BID = $facility->facility_id;
+                $model->longitude = "117.2423E";
+                $model->latitude = "2517.2831N";
+                $model->status = Alarm::STATUS_10;
+                $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
+                $model->save();
+
+                $server = new CommonService();
+                $server->alarm($facility->title);
             }
         }
 
