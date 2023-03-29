@@ -318,7 +318,7 @@ class DutyController extends BaseController
                 $model->latitude = "2517.2831N";
                 $model->status = Alarm::STATUS_10;
                 $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
-                $size = $input->body->pictureList->getSize();
+                $size = json_decode($input->body->pictureList)->getSize();
                 if ($size > 0) {
                     $model->camera_pic = current($input->body->pictureList);
                 }
