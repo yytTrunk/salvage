@@ -319,13 +319,15 @@ class DutyController extends BaseController
                 $model->status = Alarm::STATUS_10;
                 $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
                 $size = count($input->body->pictureList);
+                Log::write($size);
+                Log::write(current($input->body->pictureList));
                 if ($size > 0) {
                     $model->camera_pic = current($input->body->pictureList);
                 }
-                $model->save();
+                // $model->save();
 
-                $server = new CommonService();
-                $server->alarm($facility->title);
+                // $server = new CommonService();
+                // $server->alarm($facility->title);
             }
         }
 
