@@ -50,6 +50,6 @@ class workerLocation extends Server
 
     public function onMessage($connection ,$data) {
         var_dump($data);
-        $connection->send($data);
+        // $connection->send($data);
     }
 }

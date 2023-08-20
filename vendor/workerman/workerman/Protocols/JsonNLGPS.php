@@ -20,21 +20,16 @@ class JsonNLGPS
     {
         $data = $recv_buffer;
 
+        $arr = explode(",", data);
+
         $res = [
-            // 'ID' => $ID,
-            // 'GPS' => $gps_state,
-            // 'Time' => $time,
-            // 'Latitude' => $latitude,
-            // 'Longitude' => $longitude,
-            // 'Alarm_Cnt' => $Alarm_Cnt,
-            // 'Radar1_Warm' => $Radar1_Warm,
-            // 'Radar1_Cnt' => $Radar1_Cnt,
-            // 'Radar2_Warm' => $Radar2_Warm,
-            // 'Radar2_Cnt' => $Radar2_Cnt,
-            // 'Radar3_Warm' => $Radar3_Warm,
-            // 'Radar3_Cnt' => $Radar3_Cnt,
-            // 'Radar4_Warm' => $Radar4_Warm,
-            // 'Radar4_Cnt' => $Radar4_Cnt,
+            'Len' => $arr[0],
+            'Data_Type' => $arr[1],
+            'Device_ID' => $arr[2],
+            'Latitude' => $arr[4],
+            'Longitude' => $arr[6],
+            'Time' =>  $arr[12],
+            'Battery_Capacity' => $arr[17],
             'data' => $recv_buffer
         ];
         return $res;
