@@ -36,7 +36,10 @@ class workerLocation extends Server
     }
 
     public function onConnect($connection) {
-        echo "hello";
+        $ip = $connection->getRemoteIP();
+        $contents = "gps device connect. RemoteIp = $ip";
+        $commonService = new CommonService();
+        $commonService->writeWorkmanLog($contents);
     }
 
     public function onClose($connection) {
@@ -48,8 +51,30 @@ class workerLocation extends Server
         echo "error [ $code ] $msg\n";
     }
 
-    public function onMessage($connection ,$data) {
-        var_dump($data);
-        // $connection->send($data);
+    public function onMessage($connection, $data) {
+        $ip = $connection->getRemoteIP();
+        $res = [
+            'Len' => $arr[0],
+            'Data_Type' => $arr[1],
+            'Device_ID' => $arr[2],
+            'Latitude' => $arr[4],
+            'Longitude' => $arr[6],
+            'Time' =>  $arr[12],
+            'Battery_Capacity' => $arr[17],
+            'data' => $recv_buffer
+        ];
+        $device_id = $data['Device_ID'];
+        $origin_data = $data['data'];
+
+
+        $contents = "ip = $ip, gps device $device_id send msg. origin_msg = $origin_data";
+        $commonService = new CommonService();
+        $commonService->writeWorkmanLog($contents);
+
+        // 存储数据库
+
+
+        // var_dump($data);
+
     }
 }
