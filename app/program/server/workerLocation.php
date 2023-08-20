@@ -19,9 +19,9 @@ use function Sodium\add;
 //define('HEARTBEAT_TIME', 55);
 
 
-class workerCamera extends Server
+class workerLocation extends Server
 {
-    protected $socket = 'JsonNL://0.0.0.0:998';
+    protected $socket = 'JsonNLGPS://0.0.0.0:998';
     protected $protocol = 'tcp';
     protected $port = '998' ;
     protected $host = '0.0.0.0';
