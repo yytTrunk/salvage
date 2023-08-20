@@ -20,7 +20,7 @@ class JsonNLGPS
     {
         $data = $recv_buffer;
 
-        $arr = explode(",", data);
+        $arr = explode(",", $data);
 
         $res = [
             'Len' => $arr[0],
