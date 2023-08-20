@@ -21,9 +21,9 @@ use function Sodium\add;
 
 class workerCamera extends Server
 {
-    protected $socket = 'JsonNL://0.0.0.0:998';
+    protected $socket = 'JsonNL://0.0.0.0:999';
     protected $protocol = 'tcp';
-    protected $port = '998' ;
+    protected $port = '999' ;
     protected $host = '0.0.0.0';
 
 
@@ -36,6 +36,7 @@ class workerCamera extends Server
     }
 
     public function onConnect($connection) {
+        echo "hello"
     }
 
     public function onClose($connection) {
