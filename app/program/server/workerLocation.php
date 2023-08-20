@@ -53,16 +53,16 @@ class workerLocation extends Server
 
     public function onMessage($connection, $data) {
         $ip = $connection->getRemoteIP();
-        $res = [
-            'Len' => $arr[0],
-            'Data_Type' => $arr[1],
-            'Device_ID' => $arr[2],
-            'Latitude' => $arr[4],
-            'Longitude' => $arr[6],
-            'Time' =>  $arr[12],
-            'Battery_Capacity' => $arr[17],
-            'data' => $recv_buffer
-        ];
+        // $res = [
+        //     'Len' => $arr[0],
+        //     'Data_Type' => $arr[1],
+        //     'Device_ID' => $arr[2],
+        //     'Latitude' => $arr[4],
+        //     'Longitude' => $arr[6],
+        //     'Time' =>  $arr[12],
+        //     'Battery_Capacity' => $arr[17],
+        //     'data' => $recv_buffer
+        // ];
         $device_id = $data['Device_ID'];
         $origin_data = $data['data'];
 
