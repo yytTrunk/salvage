@@ -21,7 +21,7 @@ use function Sodium\add;
 
 class workerCamera extends Server
 {
-    protected $socket = 'tcp://0.0.0.0:998';
+    protected $socket = 'JsonNL://0.0.0.0:998';
     protected $protocol = 'tcp';
     protected $port = '998' ;
     protected $host = '0.0.0.0';
