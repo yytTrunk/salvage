@@ -1,15 +1,11 @@
 <?php
 
-
 namespace app\program\server;
 
-
 use app\program\controller\IndexController;
-use app\program\model\Alarm;
 use app\program\model\Message;
-use app\program\model\User;
+use app\program\model\GpsLog;
 use app\program\service\CommonService;
-use think\Cache;
 use think\facade\Db;
 use think\worker\Server;
 use Workerman\Lib\Timer;
@@ -66,15 +62,17 @@ class workerLocation extends Server
         $device_id = $data['Device_ID'];
         $origin_data = $data['data'];
 
-
         $contents = "ip = $ip, gps device $device_id send msg. origin_msg = $origin_data";
         $commonService = new CommonService();
         $commonService->writeWorkmanLog($contents);
 
         // 存储数据库
-
-
-        // var_dump($data);
-
+        $model = new GpsLog();
+        $model->device_id = $data['Device_ID'];
+        $model->longitude = $data['Longitude'];
+        $model->latitude = $data['Latitude'];
+        $model->upload_time = $data['Time'];
+        $model->battery_capacity = $data['Battery_Capacity'];
+        $model->save();
     }
 }
