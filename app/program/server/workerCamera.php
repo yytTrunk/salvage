@@ -36,7 +36,7 @@ class workerCamera extends Server
     }
 
     public function onConnect($connection) {
-        echo "hello"
+        echo "hello";
     }
 
     public function onClose($connection) {
