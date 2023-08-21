@@ -344,7 +344,7 @@ class DutyController extends BaseController
      */
     public function facilityGps(Request $request): Json
     {
-        $data = FacilityGps::where()->select();
+        $data = FacilityGps::select();
         if ($data) {
             foreach ($data as $item) {
                 $log = GpsLog::where(['device_id' => $item->device_id])->order('create_time','desc')->find();
