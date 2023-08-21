@@ -74,9 +74,6 @@ class JsonNLGPS
         
         // 格式化输出
         $output = $gmtDateTime->format('Y-m-d H:i:s');
-        
-        echo "输入格林威治时间：$input\n";
-        echo "转换后的中国时间：$output\n";
         return $output;
     }
 }
