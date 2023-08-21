@@ -357,4 +357,16 @@ class DutyController extends BaseController
 
         return $this->jsonSuccess('OK', $data);
     }
+
+    /**
+     * 查询gps设备的坐标
+     * @return Json
+     */
+    public function facilityGpsLog(Request $request): Json
+    {
+        $param = $request->post();
+        $device_id = $param['device_id'];
+        $log = GpsLog::where(['device_id' => $device_id])->order('create_time','desc')->find();
+        return $this->jsonSuccess('OK', $log);
+    }
 }
