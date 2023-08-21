@@ -43,5 +43,5 @@ Route::post('/duty/handleYSMsg','duty/handleYSMsg');
 
 
 Route::post('/duty/facilityGps','duty/facilityGps');
-
+Route::post('/duty/facilityGpsLog','duty/facilityGpsLog');
 
