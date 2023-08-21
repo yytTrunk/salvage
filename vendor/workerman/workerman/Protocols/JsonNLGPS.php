@@ -40,6 +40,7 @@ class JsonNLGPS
             'Latitude' => $arr[4],
             'Longitude' => $arr[6],
             'Time' =>  $arr[12],
+            'Vaild_data' => $arr[15],
             'Battery_Capacity' => $arr[17],
             'data' => $recv_buffer
         ];
