@@ -14,6 +14,8 @@ use app\Request;
 use think\facade\Db;
 use think\response\Json;
 use think\facade\Log;
+use app\program\model\GpsLog;
+use app\program\model\FacilityGps;
 
 class DutyController extends BaseController
 {
@@ -334,5 +336,24 @@ class DutyController extends BaseController
         return \json([
             'messageId' => $input->header->messageId
         ]);
+    }
+
+    /**
+     * 查询gps设备
+     * @return Json
+     */
+    public function facilityGps(Request $request): Json
+    {
+        $data = FacilityGps::where()->select();
+        if ($data) {
+            foreach ($data as $item) {
+                $log = GpsLog::where(['device_id' => $item->device_id])->order('create_time','desc')->find();
+                $item->longitude = $log->longitude;
+                $item->latitude = $log->latitude;
+                $item->time = $log->upload_time;
+            }
+        }
+
+        return $this->jsonSuccess('OK', $data);
     }
 }

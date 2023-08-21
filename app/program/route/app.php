@@ -41,3 +41,7 @@ Route::post('/duty/conveyAlarm','duty/conveyAlarm');
 Route::post('/duty/alarmDetail','duty/alarmDetail');
 Route::post('/duty/handleYSMsg','duty/handleYSMsg');
 
+
+Route::post('/duty/facilityGps','duty/facilityGps');
+
+
