@@ -59,7 +59,7 @@ class workerLocation extends Server
 
             // 24 30 38 2c 52 41 2c 30 2c 31 2c 23 0A
             // 需要平台应答，应答内容固定 $08,RA,0,1,#\n
-            $cmd = "\x24\x30\x38\x2c\x52\x41\x2c\x30\x2c\x31c\x2c\x23\x0A";
+            $cmd = "\x24\x30\x38\x2c\x52\x41\x2c\x30\x2c\x31\x2c\x23\x0A";
             $connection->send($cmd);
             return;
         }
