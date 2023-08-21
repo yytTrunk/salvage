@@ -49,6 +49,21 @@ class workerLocation extends Server
 
     public function onMessage($connection, $data) {
         $ip = $connection->getRemoteIP();
+        $commonService = new CommonService();
+        
+        // 判断是不是注册包
+        if ("R" == $data['Data_Type']) {
+            $device_id = $data['Device_ID'];
+            $contents = "ip = $ip, deviceId = $device_id, 注册包";
+            $commonService->writeWorkmanLog($contents);
+
+            // 响应应答
+            $msgRet = "2430382c52412c302c312c230A";
+            $connection->send($msgRet);
+            return;
+        }
+
+
         // $res = [
         //     'Len' => $arr[0],
         //     'Data_Type' => $arr[1],
@@ -63,9 +78,8 @@ class workerLocation extends Server
         $origin_data = $data['data'];
 
         $contents = "ip = $ip, gps device $device_id send msg. origin_msg = $origin_data";
-        $commonService = new CommonService();
         $commonService->writeWorkmanLog($contents);
-
+ 
         // 存储数据库
         $model = new GpsLog();
         $model->device_id = $data['Device_ID'];
