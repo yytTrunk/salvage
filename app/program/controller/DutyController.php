@@ -350,7 +350,8 @@ class DutyController extends BaseController
                 $log = GpsLog::where(['device_id' => $item->device_id])->order('create_time','desc')->find();
                 $item->longitude = $log->longitude;
                 $item->latitude = $log->latitude;
-                $item->time = $log->upload_time;
+                $item->upload_time = $log->upload_time;
+                $item->battery_capacity = $log->battery_capacity;
             }
         }
 
