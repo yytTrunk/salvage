@@ -19,6 +19,7 @@ class JsonNLGPS
     public static function decode($recv_buffer)
     {
         $data = $recv_buffer;
+        var_dump($data);
 
         $arr = explode(",", $data);
 
