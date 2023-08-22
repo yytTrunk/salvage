@@ -349,10 +349,12 @@ class DutyController extends BaseController
         if ($data) {
             foreach ($data as $item) {
                 $log = GpsLog::where(['device_id' => $item->device_id])->where(['data_type' => "S"])->order('create_time','desc')->find();
-                $item->longitude = $log->longitude;
-                $item->latitude = $log->latitude;
-                $item->upload_time = $log->upload_time;
-                $item->battery_capacity = $log->battery_capacity;
+                if ($log) {
+                    $item->longitude = $log->longitude;
+                    $item->latitude = $log->latitude;
+                    $item->upload_time = $log->upload_time;
+                    $item->battery_capacity = $log->battery_capacity;
+                }
             }
         }
 
@@ -367,7 +369,7 @@ class DutyController extends BaseController
     {
         $param = $request->post();
         $device_id = $param['device_id'];
-        $log = GpsLog::where(['device_id' => $device_id])->order('create_time','desc')->find();
+        $log = GpsLog::where(['device_id' => $device_id])->where(['data_type' => "S"])->order('create_time','desc')->find();
         return $this->jsonSuccess('OK', $log);
     }
 }
