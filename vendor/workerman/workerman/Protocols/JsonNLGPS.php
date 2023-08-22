@@ -35,13 +35,15 @@ class JsonNLGPS
 
         $self = new self();
         $time = $self->convertTime($arr[12]);
+        $longitude = $self->convertLongitude($arr[6]);
+        $latitude = $self->convertLatitude($arr[4]);
         // 正常数据包
         $res = [
             'Len' => $arr[0],
             'Data_Type' => $arr[1],
             'Device_ID' => $arr[2],
-            'Latitude' => $arr[4],
-            'Longitude' => $arr[6],
+            'Latitude' => $longitude,
+            'Longitude' => $latitude,
             'Time' =>  $time,
             'Vaild_data' => $arr[15],
             'Battery_Capacity' => $arr[17],
@@ -75,5 +77,42 @@ class JsonNLGPS
         // 格式化输出
         $output = $gmtDateTime->format('Y-m-d H:i:s');
         return $output;
+    }
+
+    protected function convertLongitude($dms) 
+    {
+        // 将输入的字符串按照点号分割成度、分和秒的部分
+        $parts = explode('.', $dms);
+        
+        // 确保分和秒的部分存在
+        if (count($parts) != 2) {
+            return $dms; // 输入格式不正确
+        }
+        
+        $degrees = intval(substr($parts[0], 0, -2)); // 度部分
+        $minutes = intval(substr($parts[0], -2)) + floatval($parts[1]) / 10000; // 分部分，转换为小数
+        
+        // 计算度的浮点数表示
+        $decimal = $degrees + $minutes / 60;
+        
+        return $decimal;
+    }
+
+    protected function convertLatitude($dms) {
+        // 将输入的字符串按照点号分割成度和分的部分
+        $parts = explode('.', $dms);
+        
+        // 确保分的部分存在
+        if (count($parts) != 2) {
+            return $dms; // 输入格式不正确
+        }
+        
+        $degrees = intval(substr($parts[0], 0, -2)); // 度部分
+        $minutes = floatval(substr($parts[0], -2) . '.' . $parts[1]); // 分部分，转换为小数
+        
+        // 计算度的浮点数表示
+        $decimal = $degrees + $minutes / 60;
+        
+        return $decimal;
     }
 }
