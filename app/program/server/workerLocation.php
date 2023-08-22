@@ -110,6 +110,7 @@ class workerLocation extends Server
         $model->device_id = $data['Device_ID'];
         $model->longitude = $data['Longitude'];
         $model->latitude = $data['Latitude'];
+        $model->data_type = $data['Data_Type'];
         $model->upload_time = $data['Time'];
         $model->battery_capacity = $data['Battery_Capacity'];
         $model->save();

@@ -16,6 +16,7 @@ use think\response\Json;
 use think\facade\Log;
 use app\program\model\GpsLog;
 use app\program\model\FacilityGps;
+use think\db\Where;
 
 class DutyController extends BaseController
 {
@@ -347,7 +348,7 @@ class DutyController extends BaseController
         $data = FacilityGps::select();
         if ($data) {
             foreach ($data as $item) {
-                $log = GpsLog::where(['device_id' => $item->device_id])->order('create_time','desc')->find();
+                $log = GpsLog::where(['device_id' => $item->device_id])->where(['data_type' => "S"])->order('create_time','desc')->find();
                 $item->longitude = $log->longitude;
                 $item->latitude = $log->latitude;
                 $item->upload_time = $log->upload_time;
