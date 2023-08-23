@@ -59,8 +59,8 @@ class JsonNLGPS
 
     protected function convertTime($input) 
     {
-        $month = substr($input, 0, 2);
-        $day = substr($input, 2, 2);
+        $day = substr($input, 0, 2);
+        $month = substr($input, 2, 2);
         $year = substr($input, 4, 2);
         $hour = substr($input, 7, 2);
         $minute = substr($input, 9, 2);
