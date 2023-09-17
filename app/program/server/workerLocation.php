@@ -33,7 +33,7 @@ class workerLocation extends Server
     }
 
     public function onConnect($connection) {
-        $ip = $connection->getRemoteIP();
+        $ip = $connection->getRemoteIP(); 
         $contents = "gps device connect. RemoteIp = $ip";
         $commonService = new CommonService();
         $commonService->writeWorkmanLog($contents);
