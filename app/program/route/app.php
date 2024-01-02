@@ -45,3 +45,8 @@ Route::post('/duty/handleYSMsg','duty/handleYSMsg');
 Route::post('/duty/facilityGps','duty/facilityGps');
 Route::post('/duty/facilityGpsLog','duty/facilityGpsLog');
 
+
+
+Route::post('/hclm/login','hclm/login');
+Route::post('/hclm/register','hclm/register');
+Route::get('/hclm/code','hclm/sms');
