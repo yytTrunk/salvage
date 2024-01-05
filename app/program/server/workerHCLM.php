@@ -4,12 +4,14 @@ namespace app\program\server;
 
 use app\program\controller\IndexController;
 use app\program\model\Message;
-use app\program\model\GpsLog;
-use app\program\model\FacilityGps;
 use app\program\service\CommonService;
 use think\facade\Db;
 use think\worker\Server;
 use Workerman\Lib\Timer;
+use app\program\model\Alarm;
+use app\program\model\User;
+use app\program\model\Facility;
+
 
 use function Sodium\add;
 
@@ -33,86 +35,161 @@ class workerHCLM extends Server
     }
 
     public function onConnect($connection) {
-        $ip = $connection->getRemoteIP(); 
-        $contents = "gps device connect. RemoteIp = $ip";
-        $commonService = new CommonService();
-        $commonService->writeWorkmanLog($contents);
+        $ip = $connection->getRemoteIP();
+        if (\think\facade\Cache::has($ip)) {
+            // $smsResp = $commonService->sendSMS("1825820361", "11111");
+            // $commonService->writeWorkmanLog("发送短信，响应".implode($smsResp));
+            $contents = "hclm device heartbeats remoteIp = $ip";
+            $commonService = new CommonService();
+            $commonService->writeWorkmanLog($contents);
+
+        } else {
+            $contents = "hclm new device connect. remoteIp = $ip";
+            $commonService = new CommonService();
+            $commonService->writeWorkmanLog($contents);
+            \think\facade\Cache::set($ip, $ip);
+        }
+        // echo \think\facade\Cache::get('ip');
+        // \think\facade\Cache::delete('ip');
+        // $res = bin2hex("ALARM");
+        // $connection->send($res);
     }
 
     public function onClose($connection) {
-
+        $ip = $connection->getRemoteIP();
+        $contents = "hclm device 断开连接 remoteIp = $ip";
+        $commonService = new CommonService();
+        $commonService->writeWorkmanLog($contents);
+        if (\think\facade\Cache::has($ip)) {
+            \think\facade\Cache::delete($ip);
+        }
     }
-
 
     public function onError($connection, $code, $msg) {
-        echo "error [ $code ] $msg\n";
+        $ip = $connection->getRemoteIP();
+        $contents = "hclm device 连接 $ip error [ $code ] $msg";
+        $commonService = new CommonService();
+        $commonService->writeWorkmanLog($contents);
     }
 
-    public function onMessage($connection, $data) {
-        $ip = $connection->getRemoteIP();
-        $commonService = new CommonService();
+    public function onMessage($connection ,$data) {
+        // 打印
+        var_dump($data);
+
+        $server = new CommonService();
+        // 16 进制 395b6419， 字符串为 579110025
+        $ID = $data['ID'];
         
-        // 判断是不是注册包
-        if ("R" == $data['Data_Type']) {
-            $device_id = $data['Device_ID'];
-            $contents = "ip = $ip, deviceId = $device_id, 注册包。";
-
-            // 24 30 38 2c 52 41 2c 30 2c 31 2c 23 0A
-            // 需要平台应答，应答内容固定 $08,RA,0,1,#\n
-            $cmd = "\x24\x30\x38\x2c\x52\x41\x2c\x30\x2c\x31\x2c\x23\x0A";
-            $connection->send($cmd);
-
-            $facility_old = FacilityGps::where(['device_id' => $device_id])->find();
-            if ($facility_old) {
-                $contents.="数据库存在，不新增加";
-            } else {
-                // 存储数据库
-                $facility_new = new FacilityGps();
-                $facility_new->device_id = $data['Device_ID'];
-                $facility_new->save();
-                $contents.="数据库不存在，增加数据库";
+        $facility = Facility::where(['facility_id' => $ID])->find();
+        $contents = "";
+        if ($facility) {
+            $contents = $facility -> title;
+        }
+        $server->writeWorkmanLog("hclm device onMessage消息发送方的设备ID=$ID    名称为  $contents");
+        
+        if ($ID == "579110025") {
+            // 读取缓存
+            if (\think\facade\Cache::has('alarm')) {
+                $server->writeWorkmanLog("hclm device 触发一次远程报警器");
+                $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
+                $connection->send($msgAlarm);
+                \think\facade\Cache::delete('alarm');
+                return;
             }
-
-            $commonService->writeWorkmanLog($contents);
-            return;
         }
 
-        // 判断是不是有效定位数据
-        // A 是 1010  bit.0 最右边
-        // Bit.0 = 1 基站定位 Bit.0 = 0 卫星定位 Bit.1 = 0 有效定位 Bit.1 = 1 未有效定位 Bit.3&Bit.2 = 00：GPS 定位；01：北斗定位；10：GPS 北斗双模定位 ；
-        if ("A" == $data['Vaild_data']) {
-            $device_id = $data['Device_ID'];
-            $origin_data = $data['data'];
-            $contents = "ip = $ip, deviceId = $device_id, 不是有效数据，不保存到数据库。 origin_msg = $origin_data";
-            $commonService->writeWorkmanLog($contents);
-            return;
+        if ($facility != null && $facility->alarm_status == Facility::ALARM_STATUS_1) {
+            $server->writeWorkmanLog("hclm device 触发一次手动触发报警ID=".$ID);
+            $facility->alarm_status = Facility::ALARM_STATUS_0;
+            // $facility->save();
+
+            // 触发一次报警命令
+            $this->alarm($data);
+            $msgAlarm2 = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
+            // $connection->send($msgAlarm2);
+
+            // 新增一条记录
+            // $model = new Alarm();
+            // $model->name = '警报';
+            // $model->BID = $data['ID'];
+            // $model->longitude = "117.2423E";
+            // $model->latitude = "2517.2831N";
+            // $model->status = Alarm::STATUS_10;
+            // $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
+            // $model->save();
         }
 
+        //警报记录
+        if ($data['Radar1_Warm'] == 1 || $data['Radar2_Warm'] == 1 || $data['Radar3_Warm'] == 1 || $data['Radar4_Warm'] == 1) {
+            //检测经纬度是否为有效数据
+//            if (strpos($data['Longitude'],'E') || strpos($data['Longitude'],'W')) {
+//                if (strpos($data['Latitude'],'S') || strpos($data['Latitude'],'N')) {
+                    $longitude = substr($data['Longitude'],0,5);
+                    $longitudeE = substr($data['Longitude'],-1,1);
+                    $latitude = substr($data['Latitude'],0,4);
+                    $latitudeE = substr($data['Latitude'],-1,1);
+                    $address = $longitude.$longitudeE.$latitude.$latitudeE;
+                    //记录发送时间
+//                    if (\think\facade\Cache::get('address')) {
+                        \think\facade\Cache::set('address',$address,10);
+                        $len = strlen($data['Longitude']);
+                        $s = substr($data['Longitude'],0,$len-3);
+                        $l = substr($data['Longitude'],-1,1);
+                        // 存储
+                        $model = new Alarm();
+                        $model->name = '警报';
+                        $model->BID = $data['ID'];
+                        $model->longitude = $s.$l;;
+                        $model->latitude = $data['Latitude'];
+                        $model->status = Alarm::STATUS_10;
+                        $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
+                        // $model->save();
+                        // if (!$data['Longitude'] || !$data['Latitude'] || !$model->longitude || !$model->latitude) {
+                        //     $model->delete();
+                        // } else {
+                        //     // 向管理员与值班室发送数据
+                        //     $server->writeWorkmanLog("收到一次报警消息，将进行报警处理，设备 ID=".$data['ID']);
 
-        // $res = [
-        //     'Len' => $arr[0],
-        //     'Data_Type' => $arr[1],
-        //     'Device_ID' => $arr[2],
-        //     'Latitude' => $arr[4],
-        //     'Longitude' => $arr[6],
-        //     'Time' =>  $arr[12],
-        //     'Battery_Capacity' => $arr[17],
-        //     'data' => $recv_buffer
-        // ];
-        $device_id = $data['Device_ID'];
-        $origin_data = $data['data'];
+                        //     // 触发一次报警命令
+                        //     $this->alarm($data);
 
-        $contents = "ip = $ip, gps deviceId = $device_id origin_msg = $origin_data";
-        $commonService->writeWorkmanLog($contents);
- 
-        // 存储数据库
-        $model = new GpsLog();
-        $model->device_id = $data['Device_ID'];
-        $model->longitude = $data['Longitude'];
-        $model->latitude = $data['Latitude'];
-        $model->data_type = $data['Data_Type'];
-        $model->upload_time = $data['Time'];
-        $model->battery_capacity = $data['Battery_Capacity'];
-        $model->save();
+                        //     $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
+                        //     $server->writeWorkmanLog("触发一次本地报警器，设备 ID=".$data['ID']);
+                        //     $connection->send($msgAlarm);
+
+                        //     // 写入缓存，用于报警
+                        //     \think\facade\Cache::set('alarm', 1);
+                        // }
+//                    }
+//                }
+//            }
+        }
+
+        // 返回数据
+        $res = substr($data['data'], 3, 8);
+        $res .= dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01);
+        $connection->send($res);
+    }
+
+    public function alarm($data) {
+        $alarm_decode_address = $data['ID'];
+        $facility = Facility::where(['facility_id' => $data['ID']])->find();
+        if ($facility) {
+            $alarm_decode_address = $facility -> title;
+        }
+
+        $server = new CommonService();
+        $users = User::where('role', 'in', User::ROLE_40.','.User::ROLE_10)->where(['status' => 1])->select();
+        // foreach ($users as $user) {
+        //     // 发送小程序弹窗告警
+        //     if ($user->openid) {
+        //         $server->sendMessageToUser($user->openid, '警报', $alarm_decode_address);
+        //     }
+        //     // 发送短信        
+        //     if ($user->tel) {
+        //         // $server->sms($user->tel,$address);
+        //         $smsResp = $server->sendSMS($user->tel, $alarm_decode_address);
+        //     }
+        // }
     }
 }

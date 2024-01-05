@@ -12,8 +12,9 @@ use app\program\model\Yacht;
 use think\Request;
 use think\response\Json;
 
-class HCLMBaseController extends BaseController
+class HCLMController extends BaseController
 {
+
 
      /**
      * 登录
@@ -168,8 +169,8 @@ class HCLMBaseController extends BaseController
 
     //获取openid
     protected function getOpenid($code){
-        $appId = $this->appId;
-        $appSecret = $this->appSecret;
+        $appId = $this->hclm_appid;
+        $appSecret = $this->hclm_appSecret;
         $url="https://api.weixin.qq.com/sns/jscode2session?appid=".$appId."&secret=".$appSecret."&js_code=".$code."&grant_type=authorization_code";
         $result = self::curl_https($url);
         $openid = $result['openid'] ?? null;
