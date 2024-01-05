@@ -12,41 +12,130 @@ class JsonNLHCLM
     {
         $data = $recv_buffer;
         $len = strlen($data);
+        for ($i=0; $i<$len; $i++) {
+            // 转化为16进制
+            $dump[] = sprintf("%s", sprintf("%02x", ord($data[$i])));
+        }
 
-        return $len;
+        // 如果id为 579110025， 为报警器设备，直接放行 
+        // echo $dump[4];
+        // echo $dump[5];
+        // echo $dump[6];
+        // echo $dump[7];
+
+        // if ($len >= 8 && $dump[4]=="35" && $dump[5]="36" && $dump[6]="37" && $dump[7]="38") {
+        //     echo "222";
+        //     // return $len;
+        // }
+        // echo "333";
+
+        // 比较消息长度是否合法
+        $msg_len = hexdec($dump[0]);
+        if (strlen($recv_buffer) < $msg_len) {
+            return 0 ;
+        } else {
+            return $msg_len;
+        }
     }
 
     public static function decode($recv_buffer)
     {
         $data = $recv_buffer;
-        var_dump($data);
-
-        $arr = explode(",", $data);
-        // 注册报文
-        // $0E,R,1000292001,#
-        // 需要平台应答，应答内容固定 $08,RA,0,1,#\n
-        if ("R" == $arr[1]) {
-            $res = [
-                'Data_Type' => $arr[1], 
-                'Device_ID' => $arr[2],
-            ];
-            return $res;
+        $len = strlen($data);
+        $dump = [];
+        $test = '';
+        for ($i=0;$i<$len;$i++){
+            $dump[] = sprintf("%s",sprintf("%02x",ord($data[$i])));
+            // if ($i>=12&&$i<16) {
+            //     $test .= $data[$i];
+            // }
         }
 
-        $self = new self();
-        $time = $self->convertTime($arr[12]);
-        $longitude = $self->convertLongitude($arr[6]);
-        $latitude = $self->convertLatitude($arr[4]);
-        // 正常数据包
+////        $a = hexdec('01234567');
+////        $test = hexdec($test);
+////        var_dump($test);
+//        var_dump($dump);
+        $ID = '';
+        for ($i = 4;$i<8;$i++) {
+            $ID .= hexdec($dump[$i]);
+        }
+        echo $ID;
+
+        $res = '';
+        $gps_state = hexdec('00');
+        $time = '';
+
+        if ($len < 20) {
+            $res = [
+                'ID' => $ID,
+                'data' => $recv_buffer,
+                'Radar1_Warm' => 0,
+                'Radar2_Warm' => 0,
+                'Radar3_Warm' => 0,
+                'Radar4_Warm' => 0
+            ];
+            return $res;
+        } 
+        
+        //时间
+        for ($i = 35 ;$i<45;$i++) {
+            $time.= chr(hexdec($dump[$i]));
+        }
+
+        //位置
+        $latitude = '';
+        for ($i = 45 ;$i<55;$i++) {
+            $latitude.= chr(hexdec($dump[$i]));
+        }
+
+        $longitude = '';
+        for ($i = 55 ;$i<=65;$i++) {
+            $longitude.= chr(hexdec($dump[$i]));
+        }
+
+        //设备报警状态
+        $Radar1_Warm = hexdec($dump[28]);
+        $Radar2_Warm = hexdec($dump[29]);
+        $Radar3_Warm = hexdec($dump[30]);
+        $Radar4_Warm = hexdec($dump[31]);
+        $Alarm_Cnt  = hexdec($dump[32]);
+        //报警时间
+        $Radar1_Cnt = '';
+        for ($i = 12;$i<16;$i++) {
+            $Radar1_Cnt .= hexdec($dump[$i]);
+        }
+
+        $Radar2_Cnt = '';
+        for ($i = 16;$i<20;$i++) {
+            $Radar2_Cnt .= hexdec($dump[$i]);
+        }
+
+        $Radar3_Cnt = '';
+        for ($i = 20;$i<24;$i++) {
+            $Radar3_Cnt .= hexdec($dump[$i]);
+        }
+
+        $Radar4_Cnt = '';
+        for ($i = 24;$i<28;$i++) {
+            $Radar4_Cnt .= hexdec($dump[$i]);
+        }
+
+        
         $res = [
-            'Len' => $arr[0],
-            'Data_Type' => $arr[1],
-            'Device_ID' => $arr[2],
+            'ID' => $ID,
+            'GPS' => $gps_state,
+            'Time' => $time,
             'Latitude' => $latitude,
             'Longitude' => $longitude,
-            'Time' =>  $time,
-            'Vaild_data' => $arr[15],
-            'Battery_Capacity' => $arr[17],
+            'Alarm_Cnt' => $Alarm_Cnt,
+            'Radar1_Warm' => $Radar1_Warm,
+            'Radar1_Cnt' => $Radar1_Cnt,
+            'Radar2_Warm' => $Radar2_Warm,
+            'Radar2_Cnt' => $Radar2_Cnt,
+            'Radar3_Warm' => $Radar3_Warm,
+            'Radar3_Cnt' => $Radar3_Cnt,
+            'Radar4_Warm' => $Radar4_Warm,
+            'Radar4_Cnt' => $Radar4_Cnt,
             'data' => $recv_buffer
         ];
         return $res;
@@ -55,64 +144,5 @@ class JsonNLHCLM
     public static function encode($data)
     {
         return $data;
-    }
-
-    protected function convertTime($input) 
-    {
-        $day = substr($input, 0, 2);
-        $month = substr($input, 2, 2);
-        $year = substr($input, 4, 2);
-        $hour = substr($input, 7, 2);
-        $minute = substr($input, 9, 2);
-        $second = substr($input, 11, 2);
-        
-        // 构建格林威治时间的日期时间对象
-        $gmtDateString = "20$year-$month-$day $hour:$minute:$second";
-        $gmtDateTime = new \DateTime($gmtDateString, new \DateTimeZone('GMT'));
-        
-        // 将时区切换到中国标准时间（CST）
-        $chinaTimeZone = new \DateTimeZone('Asia/Shanghai');
-        $gmtDateTime->setTimezone($chinaTimeZone);
-        
-        // 格式化输出
-        $output = $gmtDateTime->format('Y-m-d H:i:s');
-        return $output;
-    }
-
-    protected function convertLongitude($dms) 
-    {
-        // 将输入的字符串按照点号分割成度、分和秒的部分
-        $parts = explode('.', $dms);
-        
-        // 确保分和秒的部分存在
-        if (count($parts) != 2) {
-            return $dms; // 输入格式不正确
-        }
-        
-        $degrees = intval(substr($parts[0], 0, -2)); // 度部分
-        $minutes = intval(substr($parts[0], -2)) + floatval($parts[1]) / 10000; // 分部分，转换为小数
-        
-        // 计算度的浮点数表示
-        $decimal = $degrees + $minutes / 60;
-        
-        return $decimal;
-    }
-
-    protected function convertLatitude($dms) {
-        // 将输入的字符串按照点号分割成度和分的部分
-        $parts = explode('.', $dms);
-        
-        // 确保分的部分存在
-        if (count($parts) != 2) {
-            return $dms; // 输入格式不正确
-        }
-        
-        $degrees = intval(substr($parts[0], 0, -2)); // 度部分
-        $minutes = floatval(substr($parts[0], -2) . '.' . $parts[1]); // 分部分，转换为小数
-        
-        // 计算度的浮点数表示
-        $decimal = $degrees + $minutes / 60;
-        
-        return $decimal;
     }
 }

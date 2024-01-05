@@ -142,7 +142,7 @@ class HCLMController extends BaseController
         //     ->asGlobalClient();
         try {
             $url = 'https://106.ihuyi.com/webservice/sms.php?method=Submit&account=C38501347&password=8ca63faea43eb88621b9f4b800e87894&mobile='.$tel.'&content=施工限高预警系统:注册验证码'.$authCodeMT;
-            $this->curl_https($url);
+            $result = $this->curl_https($url);
         //     $result = AlibabaCloud::rpcRequest()
         //         ->product('Dysmsapi')
         //         // ->scheme('https') // https | http
