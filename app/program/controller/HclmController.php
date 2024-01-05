@@ -132,33 +132,40 @@ class HCLMController extends BaseController
         $jsonTemplateParam = json_encode(['code' => $authCodeMT]);
 
         //return $jsonTemplateParam;
-        AlibabaCloud::accessKeyClient($accessKeyId, $accessSecret)
-            ->regionId('cn-hangzhou')
-            ->asGlobalClient();
-        try {
-            $result = AlibabaCloud::rpcRequest()
-                ->product('Dysmsapi')
-                // ->scheme('https') // https | http
-                ->version('2017-05-25')
-                ->action('SendSms')
-                ->method('POST')
-                ->options([
-                    'query' => [
-                        'RegionId' => 'cn-hangzhou',
-                        'PhoneNumbers' => $tel,//目标手机号
-                        'SignName' => $signName,
-                        'TemplateCode' => $templateCode,
-                        'TemplateParam' => $jsonTemplateParam,
-                    ],
-                ])
-                ->request();
 
-            $opRes = $result->toArray();
-            if ($opRes && $opRes['Code'] == "OK"){
+
+
+
+
+        // AlibabaCloud::accessKeyClient($accessKeyId, $accessSecret)
+        //     ->regionId('cn-hangzhou')
+        //     ->asGlobalClient();
+        try {
+            $url = 'https://106.ihuyi.com/webservice/sms.php?method=Submit&account=C38501347&password=8ca63faea43eb88621b9f4b800e87894&mobile='.$tel.'&content=施工限高预警系统:注册验证码'.$authCodeMT;
+            $this->curl_https($url);
+        //     $result = AlibabaCloud::rpcRequest()
+        //         ->product('Dysmsapi')
+        //         // ->scheme('https') // https | http
+        //         ->version('2017-05-25')
+        //         ->action('SendSms')
+        //         ->method('POST')
+        //         ->options([
+        //             'query' => [
+        //                 'RegionId' => 'cn-hangzhou',
+        //                 'PhoneNumbers' => $tel,//目标手机号
+        //                 'SignName' => $signName,
+        //                 'TemplateCode' => $templateCode,
+        //                 'TemplateParam' => $jsonTemplateParam,
+        //             ],
+        //         ])
+        //         ->request();
+
+        //     $opRes = $result->toArray();
+        //     if ($opRes && $opRes['Code'] == "OK"){
                 //保存用户接收记录，当天允许查看留言
                 \think\facade\Cache::set($tel, $authCodeMT, 60*5);
                 return $this->jsonSuccess('发送成功', ['code' => $authCodeMT]);
-            }
+            // }
 
         } catch (ClientException $e) {
             return $this->jsonFail('发送失败');
