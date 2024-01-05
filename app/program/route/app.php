@@ -49,4 +49,4 @@ Route::post('/duty/facilityGpsLog','duty/facilityGpsLog');
 
 Route::post('/hclm/login','hclm/login');
 Route::post('/hclm/register','hclm/register');
-Route::get('/hclm/code','hclm/sms');
+Route::get('/hclm/sms','hclm/sms');
