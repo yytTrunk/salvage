@@ -246,10 +246,10 @@ class HCLMController extends BaseController
             }
         }
 
-        $data = \json([
+        $data = [
             'list' => $list,
             'total' => $count
-        ]);
+        ];
 
         return $this->jsonSuccess('OK', $data);
     }
