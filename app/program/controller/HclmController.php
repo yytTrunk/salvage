@@ -300,4 +300,32 @@ class HCLMController extends BaseController
 
         return $this->jsonSuccess('OK');
     }
+
+    /**
+     * 查询一条告警处理的详细信息
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function alarmDetail(Request $request): Json
+    {
+        $param = $request->post();
+        $alarm_id = $param['alarm_id'];
+
+        $alarm = HclmAlarm::where(['id' => $alarm_id])->find();
+        if ($alarm) {
+            $facility = HclmFacility::where(['facility_id' => $alarm->BID])->find();
+
+
+            $alarm->status_code = $alarm->status;
+            $alarm->status = $alarm->getStatusName();
+            $alarm->facility_name = $facility->title;
+            $alarm->log = HclmAlarmLog::where(['alarm_id' => $alarm->id])->select();
+        } else {
+            return $this->jsonFail('查询记录不存在');
+        }
+
+        return $this->jsonSuccess('OK', $alarm);
+    }
 }
