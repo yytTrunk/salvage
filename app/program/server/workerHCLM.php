@@ -8,8 +8,8 @@ use app\program\service\CommonService;
 use think\facade\Db;
 use think\worker\Server;
 use Workerman\Lib\Timer;
-use app\program\model\Alarm;
-use app\program\model\User;
+use app\program\model\HclmAlarm;
+use app\program\model\HclmUser;
 use app\program\model\HclmFacility;
 
 
@@ -131,19 +131,20 @@ class workerHCLM extends Server
                     $address = $longitude.$longitudeE.$latitude.$latitudeE;
                     //记录发送时间
 //                    if (\think\facade\Cache::get('address')) {
-                        \think\facade\Cache::set('address',$address,10);
+                        // \think\facade\Cache::set('address',$address,10);
                         $len = strlen($data['Longitude']);
                         $s = substr($data['Longitude'],0,$len-3);
                         $l = substr($data['Longitude'],-1,1);
                         // 存储
-                        $model = new Alarm();
+                        $model = new HclmAlarm();
                         $model->name = '警报';
                         $model->BID = $data['ID'];
                         $model->longitude = $s.$l;;
                         $model->latitude = $data['Latitude'];
-                        $model->status = Alarm::STATUS_10;
+                        $model->status = HclmAlarm::STATUS_10;
                         $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
-                        // $model->save();
+                        $model->save();
+                        
                         // if (!$data['Longitude'] || !$data['Latitude'] || !$model->longitude || !$model->latitude) {
                         //     $model->delete();
                         // } else {
@@ -179,7 +180,7 @@ class workerHCLM extends Server
         }
 
         $server = new CommonService();
-        $users = User::where('role', 'in', User::ROLE_40.','.User::ROLE_10)->where(['status' => 1])->select();
+        // $users = HclmUser::where('role', 'in', HclmUser::ROLE_40.','.HclmUser::ROLE_10)->where(['status' => 1])->select();
         // foreach ($users as $user) {
         //     // 发送小程序弹窗告警
         //     if ($user->openid) {

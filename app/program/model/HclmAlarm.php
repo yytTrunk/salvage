@@ -8,7 +8,7 @@ use think\Model;
 /**
  * @mixin \think\Model
  */
-class Alarm extends Model
+class HclmAlarm extends Model
 {
     //
     /**
