@@ -280,7 +280,7 @@ class HCLMController extends BaseController
 
         if ($status_codes == HclmAlarm::STATUS_40) {
             $model->log = $user->name . '已经处理，警报编号：' . $alarm->number;
-        } else if ($status_codes == HclmAlarm::STATUS_40) {
+        } else if ($status_codes == HclmAlarm::STATUS_30) {
             $model->log = $user->name . '确认误报，警报编号：' . $alarm->number;
         }
 
