@@ -122,16 +122,16 @@ class workerHCLM extends Server
         //警报记录
         if ($data['Radar1_Warm'] == 1 || $data['Radar2_Warm'] == 1 || $data['Radar3_Warm'] == 1 || $data['Radar4_Warm'] == 1) {
             //检测经纬度是否为有效数据
-//            if (strpos($data['Longitude'],'E') || strpos($data['Longitude'],'W')) {
-//                if (strpos($data['Latitude'],'S') || strpos($data['Latitude'],'N')) {
+        //    if (strpos($data['Longitude'],'E') || strpos($data['Longitude'],'W')) {
+            //    if (strpos($data['Latitude'],'S') || strpos($data['Latitude'],'N')) {
                     $longitude = substr($data['Longitude'],0,5);
                     $longitudeE = substr($data['Longitude'],-1,1);
                     $latitude = substr($data['Latitude'],0,4);
                     $latitudeE = substr($data['Latitude'],-1,1);
                     $address = $longitude.$longitudeE.$latitude.$latitudeE;
                     //记录发送时间
-//                    if (\think\facade\Cache::get('address')) {
-                        // \think\facade\Cache::set('address',$address,10);
+                //    if (\think\facade\Cache::get('address')) {
+                        \think\facade\Cache::set('address',$address,10);
                         $len = strlen($data['Longitude']);
                         $s = substr($data['Longitude'],0,$len-3);
                         $l = substr($data['Longitude'],-1,1);
@@ -144,26 +144,26 @@ class workerHCLM extends Server
                         $model->status = HclmAlarm::STATUS_10;
                         $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
                         $model->save();
-                        
-                        // if (!$data['Longitude'] || !$data['Latitude'] || !$model->longitude || !$model->latitude) {
-                        //     $model->delete();
-                        // } else {
-                        //     // 向管理员与值班室发送数据
-                        //     $server->writeWorkmanLog("收到一次报警消息，将进行报警处理，设备 ID=".$data['ID']);
 
-                        //     // 触发一次报警命令
-                        //     $this->alarm($data);
+                        if (!$data['Longitude'] || !$data['Latitude'] || !$model->longitude || !$model->latitude) {
+                            $model->delete();
+                        } else {
+                            // 向管理员与值班室发送数据
+                            $server->writeWorkmanLog("收到一次报警消息，将进行报警处理，设备 ID=".$data['ID']);
 
-                        //     $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
-                        //     $server->writeWorkmanLog("触发一次本地报警器，设备 ID=".$data['ID']);
-                        //     $connection->send($msgAlarm);
+                            // 触发一次报警命令
+                            $this->alarm($data);
 
-                        //     // 写入缓存，用于报警
-                        //     \think\facade\Cache::set('alarm', 1);
-                        // }
-//                    }
-//                }
-//            }
+                            $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
+                            $server->writeWorkmanLog("hclm device 触发一次本地报警器，设备 ID=".$data['ID']);
+                            $connection->send($msgAlarm);
+
+                            // 写入缓存，用于报警
+                            \think\facade\Cache::set('hclmAlarm', 1);
+                        }
+                //    }
+            //    }
+        //    }
         }
 
         // 返回数据
@@ -180,17 +180,17 @@ class workerHCLM extends Server
         }
 
         $server = new CommonService();
-        // $users = HclmUser::where('role', 'in', HclmUser::ROLE_40.','.HclmUser::ROLE_10)->where(['status' => 1])->select();
-        // foreach ($users as $user) {
-        //     // 发送小程序弹窗告警
-        //     if ($user->openid) {
-        //         $server->sendMessageToUser($user->openid, '警报', $alarm_decode_address);
-        //     }
-        //     // 发送短信        
-        //     if ($user->tel) {
-        //         // $server->sms($user->tel,$address);
-        //         $smsResp = $server->sendSMS($user->tel, $alarm_decode_address);
-        //     }
-        // }
+        $users = HclmUser::where('role', 'in', HclmUser::ROLE_40)->where(['status' => 1])->select();
+        foreach ($users as $user) {
+            // 发送小程序弹窗告警
+            // if ($user->openid) {
+            //     $server->sendMessageToUser($user->openid, '警报', $alarm_decode_address);
+            // }
+            // 发送短信        
+            if ($user->tel) {
+                // $server->sms($user->tel,$address);
+                $smsResp = $server->sendSMS($user->tel, $alarm_decode_address);
+            }
+        }
     }
 }

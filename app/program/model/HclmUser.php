@@ -24,10 +24,10 @@ class HclmUser extends Model
     //  */
     // const ROLE_30 = 30;
 
-    // /**
-    //  *@var integer 管理员
-    //  */
-    // const ROLE_40 = 40;
+    /**
+     *@var integer 管理员
+     */
+    const ROLE_40 = 40;
 
     // /**
     //  *@var integer 待完善
@@ -40,19 +40,19 @@ class HclmUser extends Model
     // const COMPLETE_END = 20;
 
 
-    // public function getRoles() {
-    //     return [
-    //         self::ROLE_10 => '值班室',
-    //         self::ROLE_20 => '游艇',
-    //         self::ROLE_30 => '指挥中心',
-    //         self::ROLE_40 => '管理员'
-    //     ];
-    // }
+    public function getRoles() {
+        return [
+            // self::ROLE_10 => '值班室',
+            // self::ROLE_20 => '游艇',
+            // self::ROLE_30 => '指挥中心',
+            self::ROLE_40 => '安全总监'
+        ];
+    }
 
-    // public function getRole() {
-    //     $roles = $this->getRoles();
-    //     return isset($roles[$this->role]) ?$roles[$this->role] : '未知' ;
-    // }
+    public function getRole() {
+        $roles = $this->getRoles();
+        return isset($roles[$this->role]) ?$roles[$this->role] : '未知' ;
+    }
 
 
     // public function getCompletes() {
