@@ -1,14 +1,14 @@
 <?php
 
-
 namespace app\program\controller;
 
-use AlibabaCloud\Client\AlibabaCloud;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
 use app\program\BaseController;
 use app\program\model\HclmUser;
-use app\program\model\Yacht;
+use app\program\model\HclmFacility;
+use app\program\model\HclmAlarmLog;
+use app\program\model\HclmAlarm;
 use think\Request;
 use think\response\Json;
 
@@ -203,4 +203,49 @@ class HCLMController extends BaseController
     //     file_put_contents($file,$qrCode);
     //     return $this->jsonSuccess('OK',['file' => $file]);
     // }
+
+    /**
+     * 查询告警信息
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function alarmPage(Request $request): Json
+    {
+        $param = $request->post();
+        $user_id = $param['user_id'];
+        $status_codes = $param['status_codes'];
+
+        $page_num = $param['page_num'];
+        $page_size = $param['page_size'];
+
+        // $user = HclmUser::where(['id' => $user_id])->find();
+        // $data = [];
+
+        $offset = ($page_num - 1) * $page_size;
+        $data = HclmAlarm::where('status', 'in',  $status_codes)->order('create_time', 'desc')->limit($offset, $page_size)->select();
+        $count = HclmAlarm::where('status', 'in',  $status_codes)->order('create_time', 'desc')->count();
+
+        $facility_arrs = HclmFacility::where(['status' => HclmFacility::STATUS_10])->select()->toArray();
+        $facility_maps = array();
+        array_map(function ($item) {
+            global $facility_maps;
+            $facility_maps[$item['facility_id']] = $item['title'];
+        }, $facility_arrs);
+
+        if ($data) {
+            foreach ($data as $key => $item) {
+                global $facility_maps;
+                $item->status_code = $item->status;
+                $item->status = $item->getStatusName();
+                $item->facility_name = empty($facility_maps[$item->BID]) ? "" : $facility_maps[$item->BID];
+                // $count = HclmAlarmLog::where(['alarm_id' => $item->id])->count();
+            }
+        }
+
+
+        return $this->jsonSuccess('OK', $data);
+    }
+
 }
