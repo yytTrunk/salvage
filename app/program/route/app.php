@@ -51,4 +51,6 @@ Route::post('/hclm/login','hclm/login');
 Route::post('/hclm/register','hclm/register');
 Route::get('/hclm/sms','hclm/sms');
 Route::post('/hclm/alarmPage','hclm/alarmPage');
+Route::post('/hclm/handleAlarm','hclm/handleAlarm');
+
 

@@ -22,7 +22,7 @@ class HclmAlarm extends Model
     // const STATUS_20 = 20;
 
     /**
-     * @var integer 警报取消
+     * @var integer 确认误报
      */
     const STATUS_30 = 30;
 
@@ -40,8 +40,8 @@ class HclmAlarm extends Model
         return [
             self::STATUS_10 => '报警中',
             // self::STATUS_20 => '接警中',
-            self::STATUS_30 => '警报取消',
-            self::STATUS_40 => '告警已处理',
+            self::STATUS_30 => '误报',
+            self::STATUS_40 => '已处理',
             // self::STATUS_50 => '传达中',
         ];
     }

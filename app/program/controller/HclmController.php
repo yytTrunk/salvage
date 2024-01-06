@@ -11,6 +11,8 @@ use app\program\model\HclmAlarmLog;
 use app\program\model\HclmAlarm;
 use think\Request;
 use think\response\Json;
+use think\facade\Db;
+
 
 class HCLMController extends BaseController
 {
@@ -224,8 +226,8 @@ class HCLMController extends BaseController
         // $data = [];
 
         $offset = ($page_num - 1) * $page_size;
-        $data = HclmAlarm::where('status', 'in',  $status_codes)->order('create_time', 'desc')->limit($offset, $page_size)->select();
-        $count = HclmAlarm::where('status', 'in',  $status_codes)->order('create_time', 'desc')->count();
+        $list = HclmAlarm::where('status', 'in',  $status_codes)->order('create_time', 'desc')->limit($offset, $page_size)->select();
+        $count = HclmAlarm::where('status', 'in',  $status_codes)->count();
 
         $facility_arrs = HclmFacility::where(['status' => HclmFacility::STATUS_10])->select()->toArray();
         $facility_maps = array();
@@ -234,8 +236,8 @@ class HCLMController extends BaseController
             $facility_maps[$item['facility_id']] = $item['title'];
         }, $facility_arrs);
 
-        if ($data) {
-            foreach ($data as $key => $item) {
+        if ($list) {
+            foreach ($list as $key => $item) {
                 global $facility_maps;
                 $item->status_code = $item->status;
                 $item->status = $item->getStatusName();
@@ -244,8 +246,58 @@ class HCLMController extends BaseController
             }
         }
 
+        $data = \json([
+            'list' => $list,
+            'total' => $count
+        ]);
 
         return $this->jsonSuccess('OK', $data);
     }
 
+    /**
+     * 完成警报
+     * @param Request $request
+     * @return Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function handleAlarm(Request $request): Json
+    {
+        $param = $request->post();
+        $user_id = $param['user_id'];
+        $alarm_id = $param['alarm_id'];
+        $status_codes = $param['status_codes'];
+
+
+        $user = HclmUser::where(['id' => $user_id])->find();
+        $alarm = HclmAlarm::where(['id' => $alarm_id])->find();
+
+        Db::startTrans();
+        $model = new HclmAlarmLog();
+        $model->user_id = $user_id;
+        $model->alarm_id = $alarm_id;
+
+        if ($status_codes == HclmAlarm::STATUS_40) {
+            $model->log = $user->name . '已经处理，警报编号：' . $alarm->number;
+        } else if ($status_codes == HclmAlarm::STATUS_40) {
+            $model->log = $user->name . '确认误报，警报编号：' . $alarm->number;
+        }
+
+        if (!$model->save()) {
+            Db::rollback();
+            return $this->jsonFail('完成失败');
+        }
+
+        $alarm->status = $status_codes;
+
+        if (!$alarm->save()) {
+            Db::rollback();
+            return $this->jsonFail('完成失败');
+        }
+
+        Db::commit();
+
+        return $this->jsonSuccess('OK');
+    }
 }
