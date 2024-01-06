@@ -10,7 +10,7 @@ use think\worker\Server;
 use Workerman\Lib\Timer;
 use app\program\model\Alarm;
 use app\program\model\User;
-use app\program\model\Facility;
+use app\program\model\HclmFacility;
 
 
 use function Sodium\add;
@@ -80,44 +80,44 @@ class workerHCLM extends Server
         // 16 进制 395b6419， 字符串为 579110025
         $ID = $data['ID'];
         
-        $facility = Facility::where(['facility_id' => $ID])->find();
+        $facility = HclmFacility::where(['facility_id' => $ID])->find();
         $contents = "";
         if ($facility) {
             $contents = $facility -> title;
         }
         $server->writeWorkmanLog("hclm device onMessage消息发送方的设备ID=$ID    名称为  $contents");
         
-        if ($ID == "579110025") {
-            // 读取缓存
-            if (\think\facade\Cache::has('alarm')) {
-                $server->writeWorkmanLog("hclm device 触发一次远程报警器");
-                $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
-                $connection->send($msgAlarm);
-                \think\facade\Cache::delete('alarm');
-                return;
-            }
-        }
+        // if ($ID == "579110025") {
+        //     // 读取缓存
+        //     if (\think\facade\Cache::has('alarm')) {
+        //         $server->writeWorkmanLog("hclm device 触发一次远程报警器");
+        //         $msgAlarm = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
+        //         $connection->send($msgAlarm);
+        //         \think\facade\Cache::delete('alarm');
+        //         return;
+        //     }
+        // }
 
-        if ($facility != null && $facility->alarm_status == Facility::ALARM_STATUS_1) {
-            $server->writeWorkmanLog("hclm device 触发一次手动触发报警ID=".$ID);
-            $facility->alarm_status = Facility::ALARM_STATUS_0;
-            // $facility->save();
+        // if ($facility != null && $facility->alarm_status == HclmFacility::ALARM_STATUS_1) {
+        //     $server->writeWorkmanLog("hclm device 触发一次手动触发报警ID=".$ID);
+        //     $facility->alarm_status = HclmFacility::ALARM_STATUS_0;
+        //     // $facility->save();
 
-            // 触发一次报警命令
-            $this->alarm($data);
-            $msgAlarm2 = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
-            // $connection->send($msgAlarm2);
+        //     // 触发一次报警命令
+        //     $this->alarm($data);
+        //     $msgAlarm2 = dechex(01).dechex(00).dechex(01).dechex(01).dechex(01).dechex(01).("AALARM");
+        //     // $connection->send($msgAlarm2);
 
-            // 新增一条记录
-            // $model = new Alarm();
-            // $model->name = '警报';
-            // $model->BID = $data['ID'];
-            // $model->longitude = "117.2423E";
-            // $model->latitude = "2517.2831N";
-            // $model->status = Alarm::STATUS_10;
-            // $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
-            // $model->save();
-        }
+        //     // 新增一条记录
+        //     // $model = new Alarm();
+        //     // $model->name = '警报';
+        //     // $model->BID = $data['ID'];
+        //     // $model->longitude = "117.2423E";
+        //     // $model->latitude = "2517.2831N";
+        //     // $model->status = Alarm::STATUS_10;
+        //     // $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
+        //     // $model->save();
+        // }
 
         //警报记录
         if ($data['Radar1_Warm'] == 1 || $data['Radar2_Warm'] == 1 || $data['Radar3_Warm'] == 1 || $data['Radar4_Warm'] == 1) {
@@ -173,7 +173,7 @@ class workerHCLM extends Server
 
     public function alarm($data) {
         $alarm_decode_address = $data['ID'];
-        $facility = Facility::where(['facility_id' => $data['ID']])->find();
+        $facility = HclmFacility::where(['facility_id' => $data['ID']])->find();
         if ($facility) {
             $alarm_decode_address = $facility -> title;
         }

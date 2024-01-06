@@ -14,8 +14,6 @@ use think\response\Json;
 
 class HCLMController extends BaseController
 {
-
-
      /**
      * 登录
      * @param Request $request
@@ -132,9 +130,6 @@ class HCLMController extends BaseController
         $jsonTemplateParam = json_encode(['code' => $authCodeMT]);
 
         //return $jsonTemplateParam;
-
-
-
 
 
         // AlibabaCloud::accessKeyClient($accessKeyId, $accessSecret)
