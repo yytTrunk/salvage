@@ -67,6 +67,8 @@ class HCLMController extends BaseController
     public function register(Request $request):Json
     {
         $param = $request->post();
+
+        $name = $param['name'];
         $tel = $param['tel'];
         $authCode = $param['authCode'];
         $password = $param['password'];
@@ -90,6 +92,7 @@ class HCLMController extends BaseController
 
         $user = new HclmUser();
         $user->user_name = $tel;
+        $user->name = $name;
 
         // if ($role == User::ROLE_10) {
         //     $user->name = $param['name'].'-值班室';
