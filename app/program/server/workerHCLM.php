@@ -204,11 +204,12 @@ class workerHCLM extends Server
         $result = $server->send_post("'https://open.ys7.com/api/lapp/token/get?appKey=eec1f9d9ac8a48ea99c59b889bc2291c&appSecret=9c0f0c0dd74365a4f8e5e152d8c06fc9'", "");
         $json_ret = json_decode($result);
         if ($json_ret->code == 200) {
+            var_dump($json_ret);
             // 抓拍
-            $data = $json_ret->data;
-            $access_token = $data -> accessToken;
+            // $data = $json_ret->data;
+            // $access_token = $data -> accessToken;
 
-            $server->writeWorkmanLog("获取token成功 = ".$access_token);
+            // $server->writeWorkmanLog("获取token成功 = ".$access_token);
         }
     }
 
