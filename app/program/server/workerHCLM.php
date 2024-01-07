@@ -201,7 +201,7 @@ class workerHCLM extends Server
     public function cameraCapture() {
         // 获取token
         $server = new CommonService();
-        $result = $server->send_post("'https://open.ys7.com/api/lapp/token/get?appKey=eec1f9d9ac8a48ea99c59b889bc2291c&appSecret=9c0f0c0dd74365a4f8e5e152d8c06fc9'", "");
+        $result = $server->send_post("https://open.ys7.com/api/lapp/token/get?appKey=eec1f9d9ac8a48ea99c59b889bc2291c&appSecret=9c0f0c0dd74365a4f8e5e152d8c06fc9", "");
         var_dump($result);
         if ($result->code == 200) {
             var_dump($result->data);
