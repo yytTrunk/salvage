@@ -143,14 +143,17 @@ class workerHCLM extends Server
                         $model->latitude = $data['Latitude'];
                         $model->status = HclmAlarm::STATUS_10;
                         $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
-                        $model->save();
+                        // $model->save();
 
                         if (!$data['Longitude'] || !$data['Latitude'] || !$model->longitude || !$model->latitude) {
                             $model->delete();
                         } else {
 
                             // 触发一次摄像头抓拍
-                            $this->cameraCapture($facility->camera_serial_num); 
+                            $pic_url = $this->cameraCapture($facility->facility_id, $facility->camera_serial_num); 
+                            $model->camrera_pic = $pic_url;
+                            
+                            $model->save();
 
                             // 向管理员与值班室发送数据
                             $server->writeWorkmanLog("收到一次报警消息，将进行报警处理，设备 ID=".$data['ID']);
@@ -198,9 +201,11 @@ class workerHCLM extends Server
         }
     }
 
-    public function cameraCapture($device_serial) {
+    public function cameraCapture($facility_id, $device_serial) {
         // 获取token
         $server = new CommonService();
+
+        $server->writeWorkmanLog("设备".$facility_id." 开始执行抓拍");
         $result = $server->send_post("https://open.ys7.com/api/lapp/token/get?appKey=eec1f9d9ac8a48ea99c59b889bc2291c&appSecret=9c0f0c0dd74365a4f8e5e152d8c06fc9", "");
         
         if ($result['code'] == 200) {    
@@ -211,15 +216,20 @@ class workerHCLM extends Server
 
             // 抓拍
             $capture_result = $server->send_post("https://open.ys7.com/api/lapp/device/capture?accessToken=".$access_token."&deviceSerial=".$device_serial."&channelNo=1", "");
-            var_dump($capture_result);
+            
             if ($capture_result['code'] == 200) {  
-                $server->writeWorkmanLog("设备抓拍成功");
+                $ret_data = $capture_result['data'];
+                $pic_url = $ret_data['picUrl'];
+                $server->writeWorkmanLog("设备".$facility_id." 抓拍成功,返回图片地址 = ".$pic_url);
+                return $pic_url;
             } else {
-                $server->writeWorkmanLog("设备抓拍失败，返回结果 = ".$capture_result['msg']);
+                $server->writeWorkmanLog("设备".$facility_id." 抓拍失败，返回结果 = ".$capture_result['msg']);
             }
         } else {
-
+            $server->writeWorkmanLog("设备".$facility_id." 抓拍失败，获取token失败");
         }
+
+        return "";
     }
 
 }
