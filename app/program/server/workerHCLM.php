@@ -196,9 +196,10 @@ class workerHCLM extends Server
             // 发送短信        
             if ($user->tel) {
                 // $server->sms($user->tel,$address);
-
-                // 暂时关闭短信告警
-                // $smsResp = $server->sendSMS($user->tel, $alarm_decode_address);
+                // 判断是否接收短信告警，1是接收，0是不接收
+                if ($user->receive_tel == 1) {
+                    $smsResp = $server->sendSMS($user->tel, $alarm_decode_address);
+                }
             }
         }
     }
