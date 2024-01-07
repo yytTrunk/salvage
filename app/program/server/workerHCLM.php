@@ -150,7 +150,7 @@ class workerHCLM extends Server
                         } else {
 
                             // 触发一次摄像头抓拍
-                            $this->cameraCapture(); 
+                            $this->cameraCapture($facility->camera_serial_num); 
 
                             // 向管理员与值班室发送数据
                             $server->writeWorkmanLog("收到一次报警消息，将进行报警处理，设备 ID=".$data['ID']);
@@ -198,17 +198,27 @@ class workerHCLM extends Server
         }
     }
 
-    public function cameraCapture() {
+    public function cameraCapture($device_serial) {
         // 获取token
         $server = new CommonService();
         $result = $server->send_post("https://open.ys7.com/api/lapp/token/get?appKey=eec1f9d9ac8a48ea99c59b889bc2291c&appSecret=9c0f0c0dd74365a4f8e5e152d8c06fc9", "");
-        var_dump($result);
-        if ($result['code'] == 200) {
-            // 抓拍
+        
+        if ($result['code'] == 200) {    
             $data = $result['data'];
             $access_token = $data['accessToken'];
 
             $server->writeWorkmanLog("获取token成功 = ".$access_token);
+
+            // 抓拍
+            $capture_result = $server->send_post("https://open.ys7.com/api/lapp/device/capture?accessToken=".$access_token."&deviceSerial=".$device_serial."&channelNo=1", "");
+            var_dump($capture_result);
+            if ($capture_result['code'] == 200) {  
+                $server->writeWorkmanLog("设备抓拍成功");
+            } else {
+                $server->writeWorkmanLog("设备抓拍失败，返回结果 = ".$capture_result);
+            }
+        } else {
+
         }
     }
 
