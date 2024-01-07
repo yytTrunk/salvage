@@ -151,7 +151,7 @@ class workerHCLM extends Server
 
                             // 触发一次摄像头抓拍
                             $pic_url = $this->cameraCapture($facility->facility_id, $facility->camera_serial_num); 
-                            $model->camrera_pic = $pic_url;
+                            $model->camera_pic = $pic_url;
 
                             $model->save();
 
@@ -196,7 +196,9 @@ class workerHCLM extends Server
             // 发送短信        
             if ($user->tel) {
                 // $server->sms($user->tel,$address);
-                $smsResp = $server->sendSMS($user->tel, $alarm_decode_address);
+
+                // 暂时关闭短信告警
+                // $smsResp = $server->sendSMS($user->tel, $alarm_decode_address);
             }
         }
     }
