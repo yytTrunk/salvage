@@ -148,6 +148,10 @@ class workerHCLM extends Server
                         if (!$data['Longitude'] || !$data['Latitude'] || !$model->longitude || !$model->latitude) {
                             $model->delete();
                         } else {
+
+                            // 触发一次摄像头抓拍
+                            $this->cameraCapture(); 
+
                             // 向管理员与值班室发送数据
                             $server->writeWorkmanLog("收到一次报警消息，将进行报警处理，设备 ID=".$data['ID']);
 
@@ -193,4 +197,20 @@ class workerHCLM extends Server
             }
         }
     }
+
+    public function cameraCapture() {
+        // 获取token
+        $url = 
+        $server = new CommonService();
+        $result = $server->send_post("'https://open.ys7.com/api/lapp/token/get?appKey=eec1f9d9ac8a48ea99c59b889bc2291c&appSecret=9c0f0c0dd74365a4f8e5e152d8c06fc9'", "");
+        $json_ret = json_decode($result);
+        if ($json_ret->code == 200) {
+            // 抓拍
+            $data = $json_ret->data;
+            $access_token = $data -> accessToken;
+
+            $server->writeWorkmanLog("获取token成功 = ".$access_token);
+        }
+    }
+
 }
