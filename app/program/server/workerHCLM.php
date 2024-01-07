@@ -152,7 +152,7 @@ class workerHCLM extends Server
                             // 触发一次摄像头抓拍
                             $pic_url = $this->cameraCapture($facility->facility_id, $facility->camera_serial_num); 
                             $model->camrera_pic = $pic_url;
-                            
+
                             $model->save();
 
                             // 向管理员与值班室发送数据
@@ -187,7 +187,7 @@ class workerHCLM extends Server
         }
 
         $server = new CommonService();
-        $users = HclmUser::where('role', 'in', HclmUser::ROLE_40)->where(['status' => 1])->select();
+        $users = HclmUser::where(['role' => HclmUser::ROLE_40])->where(['status' => 1])->select();
         foreach ($users as $user) {
             // 发送小程序弹窗告警
             // if ($user->openid) {
