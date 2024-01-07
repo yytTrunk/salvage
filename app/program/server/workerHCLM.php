@@ -215,7 +215,7 @@ class workerHCLM extends Server
             if ($capture_result['code'] == 200) {  
                 $server->writeWorkmanLog("设备抓拍成功");
             } else {
-                $server->writeWorkmanLog("设备抓拍失败，返回结果 = ".$capture_result);
+                $server->writeWorkmanLog("设备抓拍失败，返回结果 = ".$capture_result['msg']);
             }
         } else {
 
