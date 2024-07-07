@@ -4,9 +4,9 @@ namespace app\program\server;
 
 use app\program\service\CommonService;
 use think\worker\Server;
-use app\program\model\GDSAlarm;
-use app\program\model\GDSFacility;
-use app\program\model\GDSUser;
+use app\program\model\GdsAlarm;
+use app\program\model\GdsFacility;
+use app\program\model\GdsUser;
 
 use function Sodium\add;
 
@@ -84,7 +84,7 @@ class workerGDS extends Server
         $facility_id = $data['Device_ID'];
         $alarm = $data['Alarm'];
         
-        $facility = GDSFacility::where(['facility_id' => $facility_id])->find();
+        $facility = GdsFacility::where(['facility_id' => $facility_id])->find();
         $contents = "";
         if ($facility) {
             $contents = $facility -> title;
@@ -97,7 +97,7 @@ class workerGDS extends Server
         // Alarm 为 1， 表示需要为异常值
         // 保存数据
         if ($data['Alarm'] == 1) {
-            $model = new GDSAlarm();
+            $model = new GdsAlarm();
             $model->alarm = $alarm;
 
             $model->project_id = $project_id;
@@ -106,12 +106,12 @@ class workerGDS extends Server
             $model->co = $data['CO'];
             $model->h2s = $data['H2S'];
             $model->ch4 = $data['CH4'];
-            $model->status = GDSAlarm::STATUS_10;
+            $model->status = GdsAlarm::STATUS_10;
             $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
             $model->save();
 
             // 查询上一次告警记录,距离这次时间，如果太短，就不重复进行短信通知，默认配置时间间隔 1 分钟。
-            $latest_alarm = GDSAlarm::where(['facility_id' => $facility_id])->orderBy('create_time', 'desc')->first();
+            $latest_alarm = GdsAlarm::where(['facility_id' => $facility_id])->orderBy('create_time', 'desc')->first();
             $now = time();
             $diff = $now - $latest_alarm->create_time;
             if ($diff > 60) {
@@ -125,7 +125,7 @@ class workerGDS extends Server
 
     public function alarm($project_id, $facility_title) {
         $server = new CommonService();
-        $users = GDSUser::where(['project_id' => $project_id])->where(['status' => 1])->select();
+        $users = GdsUser::where(['project_id' => $project_id])->where(['status' => 1])->select();
         foreach ($users as $user) {
             // 发送小程序弹窗告警
             // if ($user->openid) {

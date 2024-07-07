@@ -23,6 +23,7 @@ thinkphp6.0框架
 监听命令 999端口998端口
 999端口监听硬件
 998端口监听gps
+990端口监听gds
 cd 到项目public
 php think worker:server -d 守护进程启动
 php think worker:server start 普通启动

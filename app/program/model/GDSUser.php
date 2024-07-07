@@ -8,7 +8,7 @@ use think\Model;
 /**
  * @mixin \think\Model
  */
-class GDSUser extends Model
+class GdsUser extends Model
 {
     // public $role_desc;
     // /**

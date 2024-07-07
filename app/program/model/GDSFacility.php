@@ -8,7 +8,7 @@ use think\Model;
 /**
  * @mixin \think\Model
  */
-class GDSFacility extends Model
+class GdsFacility extends Model
 {
     /**
      * @var integer 正常

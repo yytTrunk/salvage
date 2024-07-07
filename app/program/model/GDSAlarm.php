@@ -8,7 +8,7 @@ use think\Model;
 /**
  * @mixin \think\Model
  */
-class GDSAlarm extends Model
+class GdsAlarm extends Model
 {
     //
     /**

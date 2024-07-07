@@ -5,16 +5,16 @@ namespace app\program\controller;
 use AlibabaCloud\Client\Exception\ClientException;
 use AlibabaCloud\Client\Exception\ServerException;
 use app\program\BaseController;
-use app\program\model\GDSUser;
-use app\program\model\GDSFacility;
-use app\program\model\GDSAlarmLog;
-use app\program\model\GDSAlarm;
+use app\program\model\GdsUser;
+use app\program\model\GdsFacility;
+use app\program\model\GdsAlarmLog;
+use app\program\model\GdsAlarm;
 use think\Request;
 use think\response\Json;
 use think\facade\Db;
 
 
-class GDSController extends BaseController
+class GdsController extends BaseController
 {
      /**
      * 登录
@@ -34,7 +34,7 @@ class GDSController extends BaseController
             return $this->jsonFail('login失败');
         }
 
-        $user = GDSUser::where('user_name','=',$tel)->where(['status' => 1])->find();
+        $user = GdsUser::where('user_name','=',$tel)->where(['status' => 1])->find();
         if (!$user) {
             return $this->jsonFail('用户名错误');
         }
@@ -86,11 +86,11 @@ class GDSController extends BaseController
             return $this->jsonFail('请输入正确验证码');
         }
 
-        if (GDSUser::where('user_name','=',$tel)->find()) {
+        if (GdsUser::where('user_name','=',$tel)->find()) {
             return $this->jsonFail('您已注册，请直接登录');
         }
 
-        $user = new GDSUser();
+        $user = new GdsUser();
         $user->user_name = $tel;
         $user->name = $name;
 
@@ -226,16 +226,16 @@ class GDSController extends BaseController
         // $page_size = $param['page_size'];
 
         // 获取用户的项目组，根据项目组获取所有设备
-        $user = GDSUser::where(['id' => $user_id])->find();
+        $user = GdsUser::where(['id' => $user_id])->find();
         $project_id = $user->project_id;
-        $facility_arrs = GDSFacility::where(['project_id' => $project_id])->select()->toArray();
+        $facility_arrs = GdsFacility::where(['project_id' => $project_id])->select()->toArray();
 
         // 准备一个数组来存储每个设施的最新告警记录
         $latest_alarms = [];
         foreach ($facility_arrs as $facility) {
             $facility_id = $facility['facility_id'];
             // 查询最近的一条告警记录
-            $latest_alarm = GDSAlarm::where(['facility_id' => $facility_id])
+            $latest_alarm = GdsAlarm::where(['facility_id' => $facility_id])
                                     ->orderBy('create_time', 'desc') 
                                     ->first();
 
@@ -247,11 +247,11 @@ class GDSController extends BaseController
 
         // $data = [];
         // $offset = ($page_num - 1) * $page_size;
-        // $list = GDSAlarm::where('status', 'in',  $status_codes)->order('create_time', 'desc')->limit($offset, $page_size)->select();
-        // $count = GDSAlarm::where('status', 'in',  $status_codes)->count();
+        // $list = GdsAlarm::where('status', 'in',  $status_codes)->order('create_time', 'desc')->limit($offset, $page_size)->select();
+        // $count = GdsAlarm::where('status', 'in',  $status_codes)->count();
 
 
-        // $facility_arrs = GDSFacility::where(['status' => GDSFacility::STATUS_10])->select()->toArray();
+        // $facility_arrs = GdsFacility::where(['status' => GdsFacility::STATUS_10])->select()->toArray();
         // $facility_maps = array();
         // array_map(function ($item) {
         //     global $facility_maps;
@@ -264,7 +264,7 @@ class GDSController extends BaseController
         //         $item->status_code = $item->status;
         //         $item->status = $item->getStatusName();
         //         $item->facility_name = empty($facility_maps[$item->BID]) ? "" : $facility_maps[$item->BID];
-        //         // $count = GDSAlarmLog::where(['alarm_id' => $item->id])->count();
+        //         // $count = GdsAlarmLog::where(['alarm_id' => $item->id])->count();
         //     }
         // }
 
@@ -291,17 +291,17 @@ class GDSController extends BaseController
         $status_codes = $param['status_codes'];
 
 
-        $user = GDSUser::where(['id' => $user_id])->find();
-        $alarm = GDSAlarm::where(['id' => $alarm_id])->find();
+        $user = GdsUser::where(['id' => $user_id])->find();
+        $alarm = GdsAlarm::where(['id' => $alarm_id])->find();
 
         Db::startTrans();
-        $model = new GDSAlarmLog();
+        $model = new GdsAlarmLog();
         $model->user_id = $user_id;
         $model->alarm_id = $alarm_id;
 
-        if ($status_codes == GDSAlarm::STATUS_40) {
+        if ($status_codes == GdsAlarm::STATUS_40) {
             $model->log = $user->name . '已经处理，警报编号：' . $alarm->number;
-        } else if ($status_codes == GDSAlarm::STATUS_30) {
+        } else if ($status_codes == GdsAlarm::STATUS_30) {
             $model->log = $user->name . '确认误报，警报编号：' . $alarm->number;
         }
 
@@ -334,15 +334,15 @@ class GDSController extends BaseController
         $param = $request->post();
         $alarm_id = $param['alarm_id'];
 
-        $alarm = GDSAlarm::where(['id' => $alarm_id])->find();
+        $alarm = GdsAlarm::where(['id' => $alarm_id])->find();
         if ($alarm) {
-            $facility = GDSFacility::where(['facility_id' => $alarm->BID])->find();
+            $facility = GdsFacility::where(['facility_id' => $alarm->BID])->find();
 
 
             $alarm->status_code = $alarm->status;
             $alarm->status = $alarm->getStatusName();
             $alarm->facility_name = $facility->title;
-            $alarm->log = GDSAlarmLog::where(['alarm_id' => $alarm->id])->select();
+            $alarm->log = GdsAlarmLog::where(['alarm_id' => $alarm->id])->select();
         } else {
             return $this->jsonFail('查询记录不存在');
         }
