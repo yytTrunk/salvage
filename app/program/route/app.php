@@ -28,7 +28,6 @@ Route::post('/yacht/unlock','manage/unLockYacht');
 Route::any('/yacht/modifyYacht','manage/modifyYacht');
 
 
-
 Route::any('/getCode','manage/getCode');
 
 
@@ -55,3 +54,9 @@ Route::post('/hclm/handleAlarm','hclm/handleAlarm');
 Route::post('/hclm/alarmDetail','hclm/alarmDetail');
 
 
+Route::post('/gds/login','gds/login');
+Route::post('/gds/register','gds/register');
+Route::get('/gds/sms','gds/sms');
+Route::post('/gds/alarmPage','gds/alarmPage');
+Route::post('/gds/handleAlarm','gds/handleAlarm');
+Route::post('/gds/alarmDetail','gds/alarmDetail');
