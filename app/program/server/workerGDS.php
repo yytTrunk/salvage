@@ -84,7 +84,7 @@ class workerGDS extends Server
         $server = new CommonService();
         $facility_id = $data['Device_ID'];
         $alarm = $data['Alarm'];
-        
+
         $facility = GdsFacility::where(['facility_id' => $facility_id])->find();
         $contents = "";
         if ($facility) {
@@ -94,13 +94,12 @@ class workerGDS extends Server
         }
         $server->writeWorkmanLog("gds device onMessage消息发送方的设备ID=$facility_id    名称为  $contents   alarm = $alarm");
 
-        $project_id = $facility->project_id;
+        $project_id = $facility -> project_id;
         // Alarm 为 1， 表示需要为异常值
         // 保存数据
         if ($data['Alarm'] == 1) {
             $model = new GdsAlarm();
             $model->alarm = $alarm;
-
             $model->project_id = $project_id;
             $model->facility_id = $facility_id;
             $model->o2 = $data['O2'];
@@ -109,18 +108,27 @@ class workerGDS extends Server
             $model->ch4 = $data['CH4'];
             $model->status = GdsAlarm::STATUS_10;
             $model->number = 'JB'.rand(0000,9999).date('Ymd',time());
-            $model->save();
 
             // 查询上一次告警记录,距离这次时间，如果太短，就不重复进行短信通知，默认配置时间间隔 1 分钟。
-            $latest_alarm = GdsAlarm::where(['facility_id' => $facility_id])->orderBy('create_time', 'desc')->first();
-            $now = time();
-            $diff = $now - $latest_alarm->create_time;
-            if ($diff > 60) {
+            $latest_alarm = GdsAlarm::where(['facility_id' => $facility_id])->order('create_time', 'desc')->find();
+
+            // 查询完成再 save 
+            $model->save();
+
+            if ($latest_alarm) {
+                $now = time();
+                $diff = $now - strtotime($latest_alarm->create_time);
+                if ($diff > 60) {
+                    // 触发一次报警命令
+                    $this->alarm($project_id, $contents);
+                } else {
+                    $server->writeWorkmanLog("与上次触发时间间隔小于 1 分钟，不进行短信告警通知。");
+                }
+            } else {
                 // 触发一次报警命令
                 $this->alarm($project_id, $contents);
-            } else {
-                $server->writeWorkmanLog("与上次触发时间间隔小于 1 分钟，不进行短信告警通知。");
             }
+
         }
     }
 
